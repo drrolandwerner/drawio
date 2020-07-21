@@ -1,11 +1,11 @@
-# namespace: csvimport-
-# label: %device%
+## ---- Styles ab hier ----
 # style: label=%ident%;fillColor=rgb(0, 0, 0);strokeColor=rgb(255, 255, 255);fontColor=rgb(255, 255, 255)
-# connect: {"from": "kalt", "to": "device", "invert":true, "style": "curved=0;endArrow=none;fontSize=11;strokeColor=#6C8EBF"}
-# connect: {"from": "warm", "to": "device", "invert":true, "style": "curved=0;endArrow=none;fontSize=11;strokeColor=#B85450"}
-# connect: {"from": "energie", "to": "device", "invert":true, "style": "curved=0;endArrow=none;fontSize=11;strokeColor=#D6B656"}
-# connect: {"from": "sonstige", "to": "device", "invert":true, "style": "curved=0;endArrow=none;fontSize=11;strokeColor=#CCCCCC"}
-# width: auto
+# namespace: csvimport
+# connect: {"from": "kalt", "to": "label", "invert":true, "style": "endArrow=none;strokeColor=#6C8EBF"}
+# connect: {"from": "warm", "to": "label", "invert":true, "style": "endArrow=none;strokeColor=#B85450"}
+# connect: {"from": "energie", "to": "label", "invert":true, "style": "endArrow=none;strokeColor=#D6B656"}
+# connect: {"from": "sonstige", "to": "label", "invert":true, "style": "endArrow=none;strokeColor=#CCCCCC"}
+# width: 100
 # height: auto
 # padding: 30
 # nodespacing: 20
@@ -13,21 +13,21 @@
 # edgespacing: 40
 # layout: horizontalflow
 ## ---- CSV ab hier ----
-device,kalt,warm,energie,sonstige
+label,kalt,warm,energie,sonstige
 GAS
+ATS01
 THERME01,GAS,ATS01
-SPEICHER01,TMP04,TMP03
-SPEICHER02,SPEICHER01,SPEICHER01
-WW01,,TMP05
-ZIRK01,,TMP06
 VENT01,THERME01,THERME01
 TMP01,,VENT01
 TMP02,WMZ01
-TMP03,,THERME01
-TMP04,WMZ01
-TMP05,,SPEICHER02
-TMP06,,SPEICHER02
-WMZ01,THERME01
 VOR01,,TMP01
 RUECK01,TMP02
-ATS01
+WMZ01,THERME01
+TMP03,,THERME01
+TMP04,WMZ01
+SPEICHER01,TMP04,TMP03
+SPEICHER02,SPEICHER01,SPEICHER01
+TMP05,,SPEICHER02
+TMP06,,SPEICHER02
+WW01,,TMP05
+ZIRK01,,TMP06
