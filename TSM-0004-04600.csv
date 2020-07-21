@@ -1,45 +1,33 @@
-## See more information for the syntax at https://drawio-app.com/import-from-csv-to-drawio/
+# namespace: csvimport-
 # label: %device%
 # style: label=%ident%;fillColor=rgb(0, 0, 0);strokeColor=rgb(255, 255, 255);fontColor=rgb(255, 255, 255)
-## parentstyle: swimlane;whiteSpace=nowrap;html=1;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;
-# stylename: -
-# styles: -
-# labelname: -
-## labels: -
-## identity: -
-## parent: -
-# namespace: csvimport-
-# connect: {"from": "connCold", "to": "ident", "invert":true, "style": "curved=0;endArrow=none;fontSize=11;strokeColor=#6C8EBF"}
-# connect: {"from": "connWarm", "to": "ident", "invert":true, "style": "curved=0;endArrow=none;fontSize=11;strokeColor=#B85450"}
-# connect: {"from": "connEnergy", "to": "ident", "invert":true, "style": "curved=0;endArrow=none;fontSize=11;strokeColor=#D6B656"}
-# connect: {"from": "connOther", "to": "ident", "invert":true, "style": "curved=0;endArrow=none;fontSize=11;strokeColor=#CCCCCC"}
-# left:
-# top: 
+# connect: {"from": "kalt", "to": "device", "invert":true, "style": "curved=0;endArrow=none;fontSize=11;strokeColor=#6C8EBF"}
+# connect: {"from": "warm", "to": "device", "invert":true, "style": "curved=0;endArrow=none;fontSize=11;strokeColor=#B85450"}
+# connect: {"from": "energie", "to": "device", "invert":true, "style": "curved=0;endArrow=none;fontSize=11;strokeColor=#D6B656"}
+# connect: {"from": "sonstige", "to": "device", "invert":true, "style": "curved=0;endArrow=none;fontSize=11;strokeColor=#CCCCCC"}
 # width: auto
 # height: auto
 # padding: 30
-## ignore: id,image,fill,stroke,refs,manager
-# link: url
 # nodespacing: 20
 # levelspacing: 80
 # edgespacing: 40
 # layout: horizontalflow
-## ---- CSV below this line. First line are column names. ----
-ident,device,datapoint,position,type,connCold,connWarm,connEnergy,connOther
-GAS,GAS,,,ENDPUNKT,,,,
-THERME01,THERME01,,,THERME,,,GAS,ATS01
-SPEICHER01,SPEICHER01,,,SPEICHER,TMP04,TMP03,
-SPEICHER02,SPEICHER02,,,SPEICHER,SPEICHER01,SPEICHER01,
-WW,WW,,,ENDPUNKT,,TMP05,
-ZIRKULATION, ZIRKULATION, ,,ENDPUNKT,,TMP06,
-VENTIL01,VENTIL01,,,VENTIL,THERME01,THERME01,
-TMP01,TMP01,,,SENSOR,,VENTIL01,
-TMP02,TMP02,,,SENSOR,WMZ01,,
-TMP03,TMP03,,,SENSOR,,THERME01,
-TMP04,TMP04,,,SENSOR,WMZ01,,
-TMP05,TMP05,,,SENSOR,,SPEICHER02,
-TMP06,TMP06,,,SENSOR,,SPEICHER02,
-WMZ01,WMZ01,,,SENSOR,THERME01,,
-VORLAUF,VORLAUF,,,ENDPUNKT,,TMP01,
-RUECKLAUF,RUECKLAUF,,,ENDPUNKT,TMP02,,
-ATS01,ATS01,,,SENSOR,,,
+## ---- CSV ab hier ----
+device,kalt,warm,energie,sonstige
+GAS
+THERME01,GAS,ATS01
+SPEICHER01,TMP04,TMP03
+SPEICHER02,SPEICHER01,SPEICHER01
+WW01,,TMP05
+ZIRK01,,TMP06
+VENT01,THERME01,THERME01
+TMP01,,VENT01
+TMP02,WMZ01
+TMP03,,THERME01
+TMP04,WMZ01
+TMP05,,SPEICHER02
+TMP06,,SPEICHER02
+WMZ01,THERME01
+VOR01,,TMP01
+RUECK01,TMP02
+ATS01
