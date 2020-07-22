@@ -1,5 +1,5 @@
 ## ---- Styles ab hier ----
-# style: label=%ident%;fillColor=rgb(0, 0, 0);strokeColor=rgb(255, 255, 255);fontColor=rgb(255, 255, 255)
+# style: label=%ident%;fillColor=rgb(0, 0, 0);strokeColor=rgb(255, 255, 255);fontColor=rgb(255, 255, 255);opacity=0
 # namespace: csvimport
 # connect: {"from": "kalt", "to": "label", "invert":true, "style": "endArrow=none;strokeColor=#6C8EBF;strokeWidth=5"}
 # connect: {"from": "warm", "to": "label", "invert":true, "style": "endArrow=none;strokeColor=#B85450;strokeWidth=5"}
