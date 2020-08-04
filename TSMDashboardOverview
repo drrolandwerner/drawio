@@ -110,7 +110,7 @@
             {
               "targetBlank": true,
               "title": "Zeige Liegenschaft",
-              "url": "http://10.196.201.37:9300/d/edo81Y4Mk/tsm-liegenschaft?orgId=1&var-lg=${__data.fields[ID]}"
+              "url": "http://10.196.201.37:9300/d/edo81Y4Mk/tsm-liegenschaft?orgId=1&from=$__from&to=$__to&var-lg=${__data.fields[ID]}"
             }
           ],
           "mappings": [
@@ -219,6 +219,10 @@
                     }
                   ]
                 }
+              },
+              {
+                "id": "displayName",
+                "value": "Messungen"
               }
             ]
           },
@@ -302,5 +306,5 @@
   "timezone": "",
   "title": "TSM Gesamt",
   "uid": "4c_Kk84Gk",
-  "version": 10
+  "version": 13
 }
