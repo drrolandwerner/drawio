@@ -15,8 +15,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 40,
-  "iteration": 1596359222590,
+  "id": 37,
+  "iteration": 1596564442268,
   "links": [],
   "panels": [
     {
@@ -28,15 +28,38 @@
       "decimals": null,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
-          "unit": "celsius"
+          "custom": {
+            "align": null
+          },
+          "links": [
+            {
+              "targetBlank": true,
+              "title": "",
+              "url": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=0004-04604&var-sensor=${__value.text}"
+            }
+          ],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
         },
         "overrides": []
       },
       "fill": 0,
       "fillGradient": 0,
       "gridPos": {
-        "h": 8,
+        "h": 11,
         "w": 18,
         "x": 0,
         "y": 0
@@ -47,10 +70,14 @@
         "alignAsTable": true,
         "avg": true,
         "current": true,
+        "hideEmpty": false,
+        "hideZero": false,
         "max": true,
         "min": true,
-        "rightSide": false,
+        "rightSide": true,
         "show": true,
+        "sort": "min",
+        "sortDesc": true,
         "total": false,
         "values": true
       },
@@ -64,7 +91,9 @@
       "renderer": "flot",
       "seriesOverrides": [
         {
-          "alias": "/WMZ*./"
+          "alias": "/WMZ.*/",
+          "color": "#C4162A",
+          "yaxis": 2
         }
       ],
       "spaceLength": 10,
@@ -73,7 +102,7 @@
       "targets": [
         {
           "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n//| filter unit==\"deg_C\"\n| filter (substring(logical,0,3)==\"TMP\" and quantity==\"radiator_sensor_temperature\")\n    or (substring(logical,0,3)==\"ATS\" and quantity==\"external_temperature\")\n    or (substring(logical,0,3)==\"WMZ\")\n| filter logical == \"$sensor\"\n| summarize value=avg(value) by logical,device,quantity,timestamp=bin(timestamp,$__interval)\n| project timestamp, logical, value\n| order by logical asc, timestamp asc \n\n",
+          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3) in (\"TMP\",\"AGT\") and quantity==\"radiator_sensor_temperature\")\n    or (substring(logical,0,3) in (\"ATS\",\"ATF\") and quantity==\"external_temperature\")\n    or (substring(logical,0,3)==\"WMZ\") \n| summarize value=avg(value) by cluster, logical,device,quantity,timestamp=bin(timestamp,$__interval)\n| project logical, value, timestamp\n\n\n",
           "refId": "A",
           "resultFormat": "time_series"
         }
@@ -82,7 +111,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Sensor",
+      "title": "Messwerte",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -98,8 +127,8 @@
       },
       "yaxes": [
         {
-          "format": "celsius",
-          "label": null,
+          "format": "short",
+          "label": "Celsius",
           "logBase": 1,
           "max": null,
           "min": null,
@@ -107,7 +136,7 @@
         },
         {
           "format": "short",
-          "label": null,
+          "label": "kWh",
           "logBase": 1,
           "max": null,
           "min": null,
@@ -118,6 +147,54 @@
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "datasource": "Azure Data Explorer Datasource dachsadxcluster DEV",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "center"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "id": 14,
+      "options": {
+        "showHeader": false
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "database": "dachsadxdb",
+          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_Cluster()\n| filter lg ==  \"$lg\"\n| project strcat(city,\", \",street, \", #\", cluster)",
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Liegenschaft",
+      "type": "table"
     },
     {
       "circleMaxSize": "10",
@@ -153,10 +230,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 16,
+        "h": 11,
         "w": 6,
         "x": 18,
-        "y": 0
+        "y": 2
       },
       "hideEmpty": false,
       "hideZero": false,
@@ -196,6 +273,176 @@
       "unitSingle": "",
       "unitSingular": "°C",
       "valueName": "avg"
+    },
+    {
+      "cards": {
+        "cardHSpacing": 2,
+        "cardMinWidth": 5,
+        "cardRound": null,
+        "cardVSpacing": 2
+      },
+      "color": {
+        "cardColor": "#b4ff00",
+        "colorScale": "sqrt",
+        "colorScheme": "interpolateSpectral",
+        "defaultColor": "#757575",
+        "exponent": 0.5,
+        "mode": "spectrum",
+        "thresholds": [
+          {
+            "color": "#b58900",
+            "tooltip": "yellow",
+            "value": 0
+          },
+          {
+            "color": "#cb4b16",
+            "tooltip": "orange",
+            "value": 1
+          },
+          {
+            "color": "#dc322f",
+            "tooltip": "red",
+            "value": 2
+          },
+          {
+            "color": "#d33682",
+            "tooltip": "magenta",
+            "value": 3
+          },
+          {
+            "color": "#6c71c4",
+            "tooltip": "violet",
+            "value": 4
+          },
+          {
+            "color": "#268bd2",
+            "tooltip": "blue",
+            "value": 5
+          },
+          {
+            "color": "#2aa198",
+            "tooltip": "cyan",
+            "value": 6
+          },
+          {
+            "color": "#859900",
+            "tooltip": "green",
+            "value": 7
+          }
+        ]
+      },
+      "data": {
+        "decimals": null,
+        "unitFormat": "short"
+      },
+      "datasource": "Azure Data Explorer Datasource dachsadxcluster DEV",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": null
+          },
+          "links": [
+            {
+              "targetBlank": true,
+              "title": "",
+              "url": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=0004-04604&var-sensor=${__value.text}"
+            }
+          ],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 18,
+        "x": 0,
+        "y": 11
+      },
+      "highlightCards": true,
+      "id": 12,
+      "legend": {
+        "show": true
+      },
+      "nullPointMode": "as empty",
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "database": "dachsadxdb",
+          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3) in (\"TMP\",\"AGT\") and quantity==\"radiator_sensor_temperature\")\n    or (substring(logical,0,3) in (\"ATS\",\"ATF\") and quantity==\"external_temperature\")\n    //or (substring(logical,0,3)==\"WMZ\") \n| summarize value=avg(value) by cluster, logical,device,quantity,timestamp=bin(timestamp,$__interval)\n//| order by logical asc, device asc, quantity asc\n| project logical, value, timestamp\n\n\n",
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Temperaturen",
+      "tooltip": {
+        "show": true
+      },
+      "type": "flant-statusmap-panel",
+      "useMax": true,
+      "xAxis": {
+        "labelFormat": "%a %m/%d",
+        "minBucketWidthToShowWeekends": 4,
+        "show": true,
+        "showCrosshair": true,
+        "showWeekends": true
+      },
+      "yAxis": {
+        "show": true,
+        "showCrosshair": false
+      },
+      "yAxisSort": "metrics"
+    },
+    {
+      "bgimage": "https://raw.githubusercontent.com/drrolandwerner/drawio/master/TSM-$lg.jpg",
+      "colorMappingMap": [],
+      "colorMappings": [],
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 13
+      },
+      "id": 11,
+      "islocked": false,
+      "islockvisible": true,
+      "metricValues": [],
+      "pluginVersion": "7.1.1",
+      "realbgimage": "https://raw.githubusercontent.com/drrolandwerner/drawio/master/TSM-0004-04604.jpg",
+      "sensors": [],
+      "series": [],
+      "seriesList": [],
+      "sizecoefficient": 20,
+      "templateSrv": null,
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Panel Title",
+      "type": "pierosavi-imageit-panel",
+      "uncache": 0.3305956185030856,
+      "valueMappings": []
     },
     {
       "datasource": "Azure Data Explorer Datasource dachsadxcluster DEV",
@@ -247,10 +494,10 @@
       "format": "short",
       "graphId": "flowchart_9",
       "gridPos": {
-        "h": 15,
-        "w": 18,
+        "h": 14,
+        "w": 24,
         "x": 0,
-        "y": 8
+        "y": 21
       },
       "id": 9,
       "newFlag": false,
@@ -272,21 +519,239 @@
             "gradient": false,
             "hidden": false,
             "invert": false,
-            "linkData": [],
+            "linkData": [
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP01",
+                "pattern": "TMP01"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP02",
+                "pattern": "TMP02"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP03",
+                "pattern": "TMP03"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP04",
+                "pattern": "TMP04"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP05",
+                "pattern": "TMP05"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP06",
+                "pattern": "TMP06"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP07",
+                "pattern": "TMP07"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP08",
+                "pattern": "TMP08"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP09",
+                "pattern": "TMP09"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP10",
+                "pattern": "TMP10"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP11",
+                "pattern": "TMP11"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP12",
+                "pattern": "TMP12"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP13",
+                "pattern": "TMP13"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP14",
+                "pattern": "TMP14"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP15",
+                "pattern": "TMP15"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP16",
+                "pattern": "TMP16"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP17",
+                "pattern": "TMP17"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP18",
+                "pattern": "TMP18"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP19",
+                "pattern": "TMP19"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP20",
+                "pattern": "TMP20"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP21",
+                "pattern": "TMP21"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP22",
+                "pattern": "TMP22"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP23",
+                "pattern": "TMP23"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP24",
+                "pattern": "TMP24"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP25",
+                "pattern": "TMP25"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=ATS01",
+                "pattern": "ATS01"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=WMZ01",
+                "pattern": "WMZ01"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=WMZ02",
+                "pattern": "WMZ02"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=WMZ03",
+                "pattern": "WMZ03"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=ATF01",
+                "pattern": "ATF01"
+              },
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=AGTS",
+                "pattern": "AGTS"
+              }
+            ],
             "linkProp": "value",
             "linkRegEx": true,
             "mappingType": 1,
             "metricType": "serie",
             "order": 1,
             "overlayIcon": false,
-            "pattern": "",
+            "pattern": "/.*/",
             "rangeData": [],
             "reduce": true,
             "refId": "A",
             "sanitize": false,
             "shapeData": [],
             "shapeProp": "value",
-            "shapeRegEx": true,
+            "shapeRegEx": false,
             "stringThresholds": [],
             "textData": [],
             "textProp": "value",
@@ -304,7 +769,7 @@
             "tpGraphSize": "200px",
             "tpGraphType": "line",
             "type": "number",
-            "unit": "celsius",
+            "unit": "none",
             "valueData": []
           },
           {
@@ -324,7 +789,15 @@
             "gradient": false,
             "hidden": false,
             "invert": false,
-            "linkData": [],
+            "linkData": [
+              {
+                "hidden": false,
+                "linkOn": "a",
+                "linkParams": false,
+                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP01",
+                "pattern": "TMP01"
+              }
+            ],
             "linkProp": "value",
             "linkRegEx": true,
             "mappingType": 1,
@@ -869,6 +1342,1196 @@
           },
           {
             "aggregation": "current_notnull",
+            "alias": "TMP09",
+            "colors": [
+              "#C4162A",
+              "#FA6400",
+              "#37872D"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": false,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 10,
+            "overlayIcon": true,
+            "pattern": "TMP09",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP09",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP09",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              30,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP10",
+            "colors": [
+              "#C4162A",
+              "#FA6400",
+              "#37872D"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": false,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 11,
+            "overlayIcon": true,
+            "pattern": "TMP10",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP10",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP10",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              30,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP11",
+            "colors": [
+              "#C4162A",
+              "#FA6400",
+              "#37872D"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": false,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 12,
+            "overlayIcon": true,
+            "pattern": "TMP11",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP11",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP11",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              30,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP12",
+            "colors": [
+              "#C4162A",
+              "#FA6400",
+              "#37872D"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": false,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 13,
+            "overlayIcon": true,
+            "pattern": "TMP12",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP12",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP12",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              30,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP13",
+            "colors": [
+              "#C4162A",
+              "#FA6400",
+              "#37872D"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": false,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 14,
+            "overlayIcon": true,
+            "pattern": "TMP13",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP13",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP13",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              30,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP14",
+            "colors": [
+              "#C4162A",
+              "#FA6400",
+              "#37872D"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": false,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 15,
+            "overlayIcon": true,
+            "pattern": "TMP14",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP14",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP14",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              30,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP15",
+            "colors": [
+              "#C4162A",
+              "#FA6400",
+              "#37872D"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": false,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 16,
+            "overlayIcon": true,
+            "pattern": "TMP15",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP15",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP15",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              30,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP16",
+            "colors": [
+              "#C4162A",
+              "#FA6400",
+              "#37872D"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": false,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 17,
+            "overlayIcon": true,
+            "pattern": "TMP16",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP16",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP16",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              30,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP17",
+            "colors": [
+              "#C4162A",
+              "#FA6400",
+              "#37872D"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": false,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 18,
+            "overlayIcon": true,
+            "pattern": "TMP17",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP17",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP17",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              30,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP18",
+            "colors": [
+              "#C4162A",
+              "#FA6400",
+              "#37872D"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": false,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 19,
+            "overlayIcon": true,
+            "pattern": "TMP18",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP18",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP18",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              30,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP19",
+            "colors": [
+              "#C4162A",
+              "#FA6400",
+              "#37872D"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": false,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 20,
+            "overlayIcon": true,
+            "pattern": "TMP19",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP19",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP19",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              30,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP20",
+            "colors": [
+              "#C4162A",
+              "#FA6400",
+              "#37872D"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": false,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 21,
+            "overlayIcon": true,
+            "pattern": "TMP20",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP20",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP20",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              30,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP21",
+            "colors": [
+              "#C4162A",
+              "#FA6400",
+              "#37872D"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": false,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 22,
+            "overlayIcon": true,
+            "pattern": "TMP21",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP21",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP21",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              30,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP22",
+            "colors": [
+              "#C4162A",
+              "#FA6400",
+              "#37872D"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": false,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 23,
+            "overlayIcon": true,
+            "pattern": "TMP22",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP22",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP22",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              30,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP23",
+            "colors": [
+              "#C4162A",
+              "#FA6400",
+              "#37872D"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": false,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 24,
+            "overlayIcon": true,
+            "pattern": "TMP23",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP23",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP23",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              30,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP24",
+            "colors": [
+              "#C4162A",
+              "#FA6400",
+              "#37872D"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": false,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 25,
+            "overlayIcon": true,
+            "pattern": "TMP24",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP24",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP24",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              30,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP25",
+            "colors": [
+              "#C4162A",
+              "#FA6400",
+              "#37872D"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": false,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 26,
+            "overlayIcon": true,
+            "pattern": "TMP25",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP25",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP25",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              30,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
             "alias": "ATS01",
             "colors": [
               "#8AB8FF",
@@ -889,7 +2552,7 @@
             "linkRegEx": true,
             "mappingType": 1,
             "metricType": "serie",
-            "order": 10,
+            "order": 27,
             "overlayIcon": false,
             "pattern": "ATS01",
             "rangeData": [],
@@ -914,6 +2577,152 @@
               {
                 "hidden": false,
                 "pattern": "ATS01",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              20,
+              25
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "ATF01",
+            "colors": [
+              "#8AB8FF",
+              "#FA6400",
+              "#C4162A"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": false,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 28,
+            "overlayIcon": false,
+            "pattern": "ATF01",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "n",
+                "hidden": false,
+                "pattern": "ATF01",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": false,
+            "stringThresholds": [
+              "/.*/",
+              "/.*/"
+            ],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "ATF01",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              20,
+              25
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "AGTS",
+            "colors": [
+              "#8AB8FF",
+              "#FA6400",
+              "#C4162A"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": false,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 29,
+            "overlayIcon": false,
+            "pattern": "AGTS",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "n",
+                "hidden": false,
+                "pattern": "AGTS",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": false,
+            "stringThresholds": [
+              "/.*/",
+              "/.*/"
+            ],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "AGTS",
                 "textOn": "wmd",
                 "textPattern": "/.*/",
                 "textReplace": "anl"
@@ -968,7 +2777,7 @@
             "linkRegEx": true,
             "mappingType": 1,
             "metricType": "serie",
-            "order": 11,
+            "order": 30,
             "overlayIcon": false,
             "pattern": "WMZ01",
             "rangeData": [],
@@ -1012,124 +2821,315 @@
             "type": "number",
             "unit": "kwatth",
             "valueData": []
+          },
+          {
+            "aggregation": "max",
+            "alias": "WMZ02",
+            "colors": [
+              "rgb(51, 48, 46)"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 0,
+            "eventData": [
+              {
+                "eventOn": -1,
+                "hidden": false,
+                "pattern": "WMZ02",
+                "style": "width",
+                "value": "60"
+              }
+            ],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": false,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 31,
+            "overlayIcon": false,
+            "pattern": "WMZ02",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "WMZ02",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": false,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "WMZ02",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [],
+            "tooltip": true,
+            "tooltipColors": false,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "kwatth",
+            "valueData": []
+          },
+          {
+            "aggregation": "max",
+            "alias": "WMZ03",
+            "colors": [
+              "rgb(51, 48, 46)"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 0,
+            "eventData": [
+              {
+                "eventOn": -1,
+                "hidden": false,
+                "pattern": "WMZ02",
+                "style": "width",
+                "value": "60"
+              }
+            ],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": false,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 32,
+            "overlayIcon": false,
+            "pattern": "WMZ03",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "WMZ03",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": false,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "WMZ03",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [],
+            "tooltip": true,
+            "tooltipColors": false,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "kwatth",
+            "valueData": []
+          },
+          {
+            "aggregation": "max",
+            "alias": "WMZ04",
+            "colors": [
+              "rgb(51, 48, 46)"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 0,
+            "eventData": [
+              {
+                "eventOn": -1,
+                "hidden": false,
+                "pattern": "WMZ02",
+                "style": "width",
+                "value": "60"
+              }
+            ],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": false,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 33,
+            "overlayIcon": false,
+            "pattern": "WMZ04",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "WMZ04",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": false,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "WMZ04",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [],
+            "tooltip": true,
+            "tooltipColors": false,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "kwatth",
+            "valueData": []
+          },
+          {
+            "aggregation": "max",
+            "alias": "WMZ05",
+            "colors": [
+              "rgb(51, 48, 46)"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 0,
+            "eventData": [
+              {
+                "eventOn": -1,
+                "hidden": false,
+                "pattern": "WMZ02",
+                "style": "width",
+                "value": "60"
+              }
+            ],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": false,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 34,
+            "overlayIcon": false,
+            "pattern": "WMZ05",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "WMZ05",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": false,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "WMZ05",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [],
+            "tooltip": true,
+            "tooltipColors": false,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "kwatth",
+            "valueData": []
           }
         ]
       },
       "targets": [
         {
           "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3)==\"TMP\" and quantity==\"radiator_sensor_temperature\")\n    or (substring(logical,0,3)==\"ATS\" and quantity==\"external_temperature\")\n    or (substring(logical,0,3)==\"WMZ\") \n| filter logical == \"$sensor\"\n| summarize value=avg(value) by cluster, logical,device,quantity,timestamp=bin(timestamp,$__interval)\n//| order by logical asc, device asc, quantity asc\n| project logical, value, timestamp\n\n\n",
+          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3) in (\"TMP\",\"AGT\") and quantity==\"radiator_sensor_temperature\")\n    or (substring(logical,0,3) in (\"ATS\",\"ATF\") and quantity==\"external_temperature\")\n    or (substring(logical,0,3)==\"WMZ\") \n| summarize value=avg(value) by cluster, logical,device,quantity,timestamp=bin(timestamp,$__interval)\n//| order by logical asc, device asc, quantity asc\n| project logical, value, timestamp\n",
           "refId": "A",
           "resultFormat": "time_series"
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Strangschema",
+      "title": "Strangschema (hover & click auf Sensor für Details)",
       "type": "agenty-flowcharting-panel",
       "valueName": "current",
       "version": "0.9.0"
-    },
-    {
-      "bgimage": "https://raw.githubusercontent.com/drrolandwerner/drawio/master/TSM-$lg.jpg",
-      "colorMappingMap": [],
-      "colorMappings": [],
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 6,
-        "x": 18,
-        "y": 16
-      },
-      "id": 11,
-      "islocked": false,
-      "islockvisible": true,
-      "metricValues": [],
-      "pluginVersion": "7.1.1",
-      "realbgimage": "https://raw.githubusercontent.com/drrolandwerner/drawio/master/TSM-0004-04604.jpg",
-      "sensors": [],
-      "series": [],
-      "seriesList": [],
-      "sizecoefficient": 20,
-      "templateSrv": null,
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Panel Title",
-      "type": "pierosavi-imageit-panel",
-      "uncache": 0.8958649075025644,
-      "valueMappings": []
-    },
-    {
-      "datasource": "Azure Data Explorer Datasource dachsadxcluster DEV",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": null
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "none"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Time"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Zeitpunkt"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Wert"
-            },
-            "properties": []
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 18,
-        "x": 0,
-        "y": 23
-      },
-      "id": 12,
-      "options": {
-        "showHeader": true,
-        "sortBy": []
-      },
-      "pluginVersion": "7.1.1",
-      "targets": [
-        {
-          "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3)==\"TMP\" and quantity==\"radiator_sensor_temperature\")\n    or (substring(logical,0,3)==\"ATS\" and quantity==\"external_temperature\")\n    or (substring(logical,0,3)==\"WMZ\") \n| filter logical == \"$sensor\"\n| summarize value=avg(value) by logical,device,quantity,timestamp=bin(timestamp,$__interval)\n| project timestamp, \"Wert\", value\n\n",
-          "refId": "A",
-          "resultFormat": "time_series"
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Messwert",
-      "type": "table"
     }
   ],
   "refresh": false,
@@ -1157,33 +3157,12 @@
         "query": "",
         "skipUrlSync": false,
         "type": "constant"
-      },
-      {
-        "current": {
-          "selected": false,
-          "text": "TMP01",
-          "value": "TMP01"
-        },
-        "hide": 2,
-        "label": "Sensor",
-        "name": "sensor",
-        "options": [
-          {
-            "selected": false,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "queryValue": "",
-        "skipUrlSync": false,
-        "type": "constant"
       }
     ]
   },
   "time": {
-    "from": "now-7d",
-    "to": "now"
+    "from": "2020-07-28T18:07:13.448Z",
+    "to": "2020-08-04T18:07:13.448Z"
   },
   "timepicker": {
     "refresh_intervals": [
@@ -1199,7 +3178,7 @@
     ]
   },
   "timezone": "",
-  "title": "TSM Sensor",
-  "uid": "bJuGuQVGz",
-  "version": 8
+  "title": "TSM Liegenschaft",
+  "uid": "edo81Y4Mk",
+  "version": 76
 }
