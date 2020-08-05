@@ -15,8 +15,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 41,
-  "iteration": 1596602469158,
+  "id": 3,
+  "iteration": 1596661110982,
   "links": [],
   "panels": [
     {
@@ -77,7 +77,7 @@
         "rightSide": true,
         "show": true,
         "sort": "min",
-        "sortDesc": true,
+        "sortDesc": false,
         "total": false,
         "values": true
       },
@@ -102,7 +102,7 @@
       "targets": [
         {
           "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3) in (\"TMP\",\"AGT\") and quantity==\"radiator_sensor_temperature\")\n    or (substring(logical,0,3) in (\"ATS\",\"ATF\") and quantity==\"external_temperature\")\n    or (substring(logical,0,3)==\"WMZ\") \n| summarize value=avg(value) by cluster, logical,device,quantity,timestamp=bin(timestamp,$__interval)\n| project logical, value, timestamp\n\n\n",
+          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3) in (\"TMP\",\"AGT\") and quantity==\"radiator_sensor_temperature\")\n    or (substring(logical,0,3) in (\"ATS\",\"ATF\") and quantity==\"external_temperature\")\n| summarize value=avg(value) by cluster, logical,device,quantity, position, direction, timestamp=bin(timestamp,$__interval)\n//| project logical, value, timestamp\n| project logical=strcat(logical,\" \", position, \" \", direction), value, timestamp\n| order by logical, timestamp asc\n\n",
           "refId": "A",
           "resultFormat": "time_series"
         }
@@ -111,10 +111,10 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Messwerte",
+      "title": "Temperaturen",
       "tooltip": {
         "shared": true,
-        "sort": 0,
+        "sort": 1,
         "value_type": "individual"
       },
       "type": "graph",
@@ -128,7 +128,7 @@
       "yaxes": [
         {
           "format": "short",
-          "label": "Celsius",
+          "label": "",
           "logBase": 1,
           "max": null,
           "min": null,
@@ -140,13 +140,39 @@
           "logBase": 1,
           "max": null,
           "min": null,
-          "show": true
+          "show": false
         }
       ],
       "yaxis": {
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 19,
+        "y": 0
+      },
+      "id": 18,
+      "options": {
+        "content": "<img src=\"https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTjB-VTmWebcfNJjEW0xm7nTUzVDWAd-LnQCw&usqp=CAU\" alt=\"techem.de\">",
+        "mode": "html"
+      },
+      "pluginVersion": "7.1.0",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "text"
     },
     {
       "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
@@ -176,7 +202,7 @@
         "h": 2,
         "w": 6,
         "x": 18,
-        "y": 0
+        "y": 3
       },
       "id": 14,
       "options": {
@@ -197,192 +223,29 @@
       "type": "table"
     },
     {
-      "circleMaxSize": "10",
-      "circleMinSize": "1",
-      "colors": [
-        "rgba(245, 54, 54, 0.9)",
-        "rgba(237, 129, 40, 0.89)",
-        "rgba(50, 172, 45, 0.97)"
-      ],
-      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
-      "decimals": 0,
-      "esMetric": "Count",
+      "datasource": null,
       "fieldConfig": {
         "defaults": {
-          "custom": {
-            "align": null
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
+          "custom": {}
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 14,
+        "h": 7,
         "w": 6,
         "x": 18,
-        "y": 2
+        "y": 5
       },
-      "hideEmpty": false,
-      "hideZero": false,
-      "id": 7,
-      "initialZoom": "5",
-      "locationData": "table",
-      "mapCenter": "custom",
-      "mapCenterLatitude": "50.143",
-      "mapCenterLongitude": "8.571",
-      "maxDataPoints": 1,
-      "mouseWheelZoom": true,
-      "pluginVersion": "7.1.1",
-      "showLegend": false,
-      "stickyLabels": false,
-      "tableQueryOptions": {
-        "geohashField": "geohash",
-        "labelField": "lg",
-        "latitudeField": "latitude",
-        "longitudeField": "longitude",
-        "metricField": "maxtemp",
-        "queryType": "coordinates"
+      "id": 20,
+      "options": {
+        "content": "<img src=\"https://raw.githubusercontent.com/drrolandwerner/drawio/master/TSM-$lg.jpg\"> ",
+        "mode": "html"
       },
-      "targets": [
-        {
-          "database": "dachsadxdb",
-          "query": "\ncluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter unit == \"deg_C\"\n| filter $__timeFilter(timestamp)\n| join kind=rightouter\n(\n    cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_Cluster()\n    | filter cluster==replace(\"-\",\"/\",\"$lg\")\n)\non $left.cluster == $right.cluster\n| summarize lg=max(lg), value=max(value), longitude=max(longitude),latitude=max(latitude) by cluster\n| extend maxtemp = case(isnull(value),0.0,value)\n| project lg, maxtemp, longitude, latitude\n",
-          "refId": "A",
-          "resultFormat": "table"
-        }
-      ],
-      "thresholds": "0,30",
+      "pluginVersion": "7.1.0",
       "timeFrom": null,
       "timeShift": null,
-      "title": "Lokation",
-      "type": "grafana-worldmap-panel",
-      "unitPlural": "°C",
-      "unitSingle": "",
-      "unitSingular": "°C",
-      "valueName": "avg"
-    },
-    {
-      "aliasColors": {},
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {},
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 5,
-        "w": 18,
-        "x": 0,
-        "y": 11
-      },
-      "hiddenSeries": false,
-      "id": 16,
-      "legend": {
-        "alignAsTable": true,
-        "avg": true,
-        "current": false,
-        "hideEmpty": false,
-        "hideZero": true,
-        "max": true,
-        "min": true,
-        "rightSide": true,
-        "show": true,
-        "total": true,
-        "values": true
-      },
-      "lines": false,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "percentage": false,
-      "pluginVersion": "7.1.1",
-      "pointradius": 1,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3)==\"WMZ\") \n| summarize value=avg(value) by cluster, logical,device,quantity,timestamp=bin(timestamp,1d)\n| sort by logical asc, timestamp asc\n| serialize prevValue = prev(value)\n| serialize prevTS = prev(timestamp)\n| extend daysDiff = datetime_diff('day', timestamp,prevTS)\n| extend delta = (value - prevValue)/daysDiff \n| filter delta >=0\n| project logical, delta, timestamp\n",
-          "refId": "A",
-          "resultFormat": "time_series"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Durchschnittliche Energie pro Tag",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "kwatth",
-          "label": "kWh pro Tag",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
+      "title": "",
+      "type": "text"
     },
     {
       "cards": {
@@ -478,10 +341,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 7,
-        "w": 18,
+        "h": 6,
+        "w": 14,
         "x": 0,
-        "y": 16
+        "y": 11
       },
       "highlightCards": true,
       "id": 12,
@@ -493,7 +356,7 @@
       "targets": [
         {
           "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3) in (\"TMP\",\"AGT\") and quantity==\"radiator_sensor_temperature\")\n    or (substring(logical,0,3) in (\"ATS\",\"ATF\") and quantity==\"external_temperature\")\n    //or (substring(logical,0,3)==\"WMZ\") \n| summarize value=avg(value) by cluster, logical,device,quantity,timestamp=bin(timestamp,$__interval)\n//| order by logical asc, device asc, quantity asc\n| project logical, value, timestamp\n\n\n",
+          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3) in (\"TMP\",\"AGT\") and quantity==\"radiator_sensor_temperature\")\n    or (substring(logical,0,3) in (\"ATS\",\"ATF\") and quantity==\"external_temperature\")\n| summarize toint(value=avg(value)) by cluster, logical,device,quantity,timestamp=bin(timestamp,$__interval)\n| project logical, value, timestamp\n\n\n",
           "refId": "A",
           "resultFormat": "time_series"
         }
@@ -520,39 +383,381 @@
       "yAxisSort": "a → z"
     },
     {
-      "bgimage": "https://raw.githubusercontent.com/drrolandwerner/drawio/master/TSM-$lg.jpg",
-      "colorMappingMap": [],
-      "colorMappings": [],
-      "datasource": null,
+      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {
+            "align": null
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 6,
-        "x": 18,
-        "y": 16
+        "h": 6,
+        "w": 4,
+        "x": 14,
+        "y": 11
       },
-      "id": 11,
-      "islocked": false,
-      "islockvisible": true,
-      "metricValues": [],
+      "id": 23,
+      "options": {
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
       "pluginVersion": "7.1.1",
-      "realbgimage": "https://raw.githubusercontent.com/drrolandwerner/drawio/master/TSM-0004-04604.jpg",
-      "sensors": [],
-      "series": [],
-      "seriesList": [],
-      "sizecoefficient": 20,
-      "templateSrv": null,
+      "targets": [
+        {
+          "database": "dachsadxdb",
+          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3) in (\"TMP\",\"AGT\") and quantity==\"radiator_sensor_temperature\")\n    or (substring(logical,0,3) in (\"ATS\",\"ATF\") and quantity==\"external_temperature\")\n| summarize avg_temp=avg(value) by cluster, logical=substring(logical,0,3),device,quantity,timestamp=bin(timestamp,$__interval)\n| project logical, avg_temp, timestamp\n| order by logical asc\n",
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Panel Title",
-      "type": "pierosavi-imageit-panel",
-      "uncache": 0.3305956185030856,
-      "valueMappings": []
+      "title": "Durchschnitt °C",
+      "type": "gauge"
+    },
+    {
+      "circleMaxSize": "10",
+      "circleMinSize": "1",
+      "colors": [
+        "rgba(245, 54, 54, 0.9)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(50, 172, 45, 0.97)"
+      ],
+      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
+      "decimals": 0,
+      "esMetric": "Count",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": null
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 16,
+        "w": 6,
+        "x": 18,
+        "y": 12
+      },
+      "hideEmpty": false,
+      "hideZero": false,
+      "id": 7,
+      "initialZoom": "5",
+      "locationData": "table",
+      "mapCenter": "custom",
+      "mapCenterLatitude": "50.143",
+      "mapCenterLongitude": "8.571",
+      "maxDataPoints": 1,
+      "mouseWheelZoom": true,
+      "pluginVersion": "7.1.1",
+      "showLegend": false,
+      "stickyLabels": false,
+      "tableQueryOptions": {
+        "geohashField": "geohash",
+        "labelField": "lg",
+        "latitudeField": "latitude",
+        "longitudeField": "longitude",
+        "metricField": "maxtemp",
+        "queryType": "coordinates"
+      },
+      "targets": [
+        {
+          "database": "dachsadxdb",
+          "query": "\ncluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter unit == \"deg_C\"\n| filter $__timeFilter(timestamp)\n| join kind=rightouter\n(\n    cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_Cluster()\n    | filter cluster==replace(\"-\",\"/\",\"$lg\")\n)\non $left.cluster == $right.cluster\n| summarize lg=max(lg), value=max(value), longitude=max(longitude),latitude=max(latitude) by cluster\n| extend maxtemp = case(isnull(value),0.0,value)\n| project lg, maxtemp, longitude, latitude\n",
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "thresholds": "0,30",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Lokation",
+      "type": "grafana-worldmap-panel",
+      "unitPlural": "°C",
+      "unitSingle": "",
+      "unitSingular": "°C",
+      "valueName": "avg"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
+      "decimals": null,
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": null
+          },
+          "links": [
+            {
+              "targetBlank": true,
+              "title": "",
+              "url": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=0004-04604&var-sensor=${__value.text}"
+            }
+          ],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "fill": 0,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 5,
+        "w": 18,
+        "x": 0,
+        "y": 17
+      },
+      "hiddenSeries": false,
+      "id": 21,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "hideEmpty": false,
+        "hideZero": false,
+        "max": false,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "sort": "min",
+        "sortDesc": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "percentage": false,
+      "pluginVersion": "7.1.1",
+      "pointradius": 0.5,
+      "points": true,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "database": "dachsadxdb",
+          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3) in (\"WMZ\"))\n| summarize value=avg(value) by cluster, logical,device,quantity,timestamp=bin(timestamp,$__interval)\n| project logical, value, timestamp\n\n\n",
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Wärmemengen",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "transformations": [],
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": "kWh",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 6,
+        "w": 18,
+        "x": 0,
+        "y": 22
+      },
+      "hiddenSeries": false,
+      "id": 16,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": false,
+        "hideEmpty": false,
+        "hideZero": true,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "total": true,
+        "values": true
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "percentage": false,
+      "pluginVersion": "7.1.1",
+      "pointradius": 1,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "/.value.*/",
+          "bars": true,
+          "lines": true,
+          "yaxis": 2
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "database": "dachsadxdb",
+          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3)==\"WMZ\") \n| summarize value=avg(value) by cluster, logical,device,quantity,timestamp=bin(timestamp,1d)\n| sort by logical asc, timestamp asc\n| serialize prevValue = prev(value)\n| serialize prevTS = prev(timestamp)\n| extend daysDiff = datetime_diff('day', timestamp,prevTS)\n| extend delta = (value - prevValue)/daysDiff \n| filter delta >=0\n| project logical, delta, timestamp\n",
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Wärmemengen pro Tag",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "kwatth",
+          "label": "kWh pro Tag",
+          "logBase": 10,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "kwatth",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     },
     {
       "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
@@ -607,7 +812,7 @@
         "h": 14,
         "w": 24,
         "x": 0,
-        "y": 24
+        "y": 28
       },
       "id": 9,
       "newFlag": false,
@@ -3251,8 +3456,8 @@
       {
         "current": {
           "selected": false,
-          "text": "0004-04604",
-          "value": "0004-04604"
+          "text": "0135-09020",
+          "value": "0135-09020"
         },
         "hide": 2,
         "label": "Liegenschaft",
@@ -3271,8 +3476,8 @@
     ]
   },
   "time": {
-    "from": "now-30d",
-    "to": "now"
+    "from": "2020-07-06T15:38:55.066Z",
+    "to": "2020-08-05T15:38:55.066Z"
   },
   "timepicker": {
     "refresh_intervals": [
@@ -3290,5 +3495,5 @@
   "timezone": "",
   "title": "TSM Liegenschaft",
   "uid": "0RkTMgIMz",
-  "version": 6
+  "version": 20
 }
