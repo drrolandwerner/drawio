@@ -15,8 +15,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 37,
-  "iteration": 1596564442268,
+  "id": 41,
+  "iteration": 1596602469158,
   "links": [],
   "panels": [
     {
@@ -24,7 +24,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Azure Data Explorer Datasource dachsadxcluster DEV",
+      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
       "decimals": null,
       "fieldConfig": {
         "defaults": {
@@ -149,7 +149,7 @@
       }
     },
     {
-      "datasource": "Azure Data Explorer Datasource dachsadxcluster DEV",
+      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -204,7 +204,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "Azure Data Explorer Datasource dachsadxcluster DEV",
+      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
       "decimals": 0,
       "esMetric": "Count",
       "fieldConfig": {
@@ -230,7 +230,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 11,
+        "h": 14,
         "w": 6,
         "x": 18,
         "y": 2
@@ -273,6 +273,116 @@
       "unitSingle": "",
       "unitSingular": "°C",
       "valueName": "avg"
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 5,
+        "w": 18,
+        "x": 0,
+        "y": 11
+      },
+      "hiddenSeries": false,
+      "id": 16,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": false,
+        "hideEmpty": false,
+        "hideZero": true,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "total": true,
+        "values": true
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "percentage": false,
+      "pluginVersion": "7.1.1",
+      "pointradius": 1,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "database": "dachsadxdb",
+          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3)==\"WMZ\") \n| summarize value=avg(value) by cluster, logical,device,quantity,timestamp=bin(timestamp,1d)\n| sort by logical asc, timestamp asc\n| serialize prevValue = prev(value)\n| serialize prevTS = prev(timestamp)\n| extend daysDiff = datetime_diff('day', timestamp,prevTS)\n| extend delta = (value - prevValue)/daysDiff \n| filter delta >=0\n| project logical, delta, timestamp\n",
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Durchschnittliche Energie pro Tag",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "kwatth",
+          "label": "kWh pro Tag",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     },
     {
       "cards": {
@@ -335,7 +445,7 @@
         "decimals": null,
         "unitFormat": "short"
       },
-      "datasource": "Azure Data Explorer Datasource dachsadxcluster DEV",
+      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -368,10 +478,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 10,
+        "h": 7,
         "w": 18,
         "x": 0,
-        "y": 11
+        "y": 16
       },
       "highlightCards": true,
       "id": 12,
@@ -407,7 +517,7 @@
         "show": true,
         "showCrosshair": false
       },
-      "yAxisSort": "metrics"
+      "yAxisSort": "a → z"
     },
     {
       "bgimage": "https://raw.githubusercontent.com/drrolandwerner/drawio/master/TSM-$lg.jpg",
@@ -424,7 +534,7 @@
         "h": 8,
         "w": 6,
         "x": 18,
-        "y": 13
+        "y": 16
       },
       "id": 11,
       "islocked": false,
@@ -445,7 +555,7 @@
       "valueMappings": []
     },
     {
-      "datasource": "Azure Data Explorer Datasource dachsadxcluster DEV",
+      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -497,7 +607,7 @@
         "h": 14,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 24
       },
       "id": 9,
       "newFlag": false,
@@ -3161,8 +3271,8 @@
     ]
   },
   "time": {
-    "from": "2020-07-28T18:07:13.448Z",
-    "to": "2020-08-04T18:07:13.448Z"
+    "from": "now-30d",
+    "to": "now"
   },
   "timepicker": {
     "refresh_intervals": [
@@ -3179,6 +3289,6 @@
   },
   "timezone": "",
   "title": "TSM Liegenschaft",
-  "uid": "edo81Y4Mk",
-  "version": 76
+  "uid": "0RkTMgIMz",
+  "version": 6
 }
