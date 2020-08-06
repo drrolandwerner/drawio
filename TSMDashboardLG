@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 3,
-  "iteration": 1596661110982,
+  "iteration": 1596689720115,
   "links": [],
   "panels": [
     {
@@ -3450,7 +3450,10 @@
   "refresh": false,
   "schemaVersion": 26,
   "style": "dark",
-  "tags": [],
+  "tags": [
+    "DACHS",
+    "TSM"
+  ],
   "templating": {
     "list": [
       {
@@ -3476,8 +3479,8 @@
     ]
   },
   "time": {
-    "from": "2020-07-06T15:38:55.066Z",
-    "to": "2020-08-05T15:38:55.066Z"
+    "from": "2020-07-07T04:23:06.237Z",
+    "to": "2020-08-06T04:23:06.237Z"
   },
   "timepicker": {
     "refresh_intervals": [
