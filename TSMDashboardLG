@@ -7,7 +7,9 @@
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
+        "limit": 100,
         "name": "Annotations & Alerts",
+        "showIn": 0,
         "type": "dashboard"
       }
     ]
@@ -16,7 +18,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 3,
-  "iteration": 1596689720115,
+  "iteration": 1596833562664,
   "links": [],
   "panels": [
     {
@@ -52,14 +54,14 @@
               }
             ]
           },
-          "unit": "short"
+          "unit": "celsius"
         },
         "overrides": []
       },
       "fill": 0,
       "fillGradient": 0,
       "gridPos": {
-        "h": 11,
+        "h": 13,
         "w": 18,
         "x": 0,
         "y": 0
@@ -69,15 +71,14 @@
       "legend": {
         "alignAsTable": true,
         "avg": true,
-        "current": true,
+        "current": false,
         "hideEmpty": false,
         "hideZero": false,
         "max": true,
         "min": true,
         "rightSide": true,
         "show": true,
-        "sort": "min",
-        "sortDesc": false,
+        "sideWidth": 440,
         "total": false,
         "values": true
       },
@@ -102,7 +103,7 @@
       "targets": [
         {
           "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3) in (\"TMP\",\"AGT\") and quantity==\"radiator_sensor_temperature\")\n    or (substring(logical,0,3) in (\"ATS\",\"ATF\") and quantity==\"external_temperature\")\n| summarize value=avg(value) by cluster, logical,device,quantity, position, direction, timestamp=bin(timestamp,$__interval)\n//| project logical, value, timestamp\n| project logical=strcat(logical,\" \", position, \" \", direction), value, timestamp\n| order by logical, timestamp asc\n\n",
+          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3) in (\"TMP\",\"AGT\") and quantity==\"radiator_sensor_temperature\")\n    or (substring(logical,0,3) in (\"ATS\",\"ATF\") and quantity==\"external_temperature\")\n| summarize value=avg(value) by cluster, logical,device,quantity, position, direction, timestamp=bin(timestamp,$intervall)\n| project logical=strcat(logical,\" \", position, \" \", direction), value, timestamp\n| order by timestamp asc\n\n",
           "refId": "A",
           "resultFormat": "time_series"
         }
@@ -127,8 +128,8 @@
       },
       "yaxes": [
         {
-          "format": "short",
-          "label": "",
+          "format": "celsius",
+          "label": "Temperatur",
           "logBase": 1,
           "max": null,
           "min": null,
@@ -223,6 +224,63 @@
       "type": "table"
     },
     {
+      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": null
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 18,
+        "y": 5
+      },
+      "id": 23,
+      "options": {
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "database": "dachsadxdb",
+          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3) in (\"TMP\",\"AGT\") and quantity==\"radiator_sensor_temperature\")\n    or (substring(logical,0,3) in (\"ATS\",\"ATF\") and quantity==\"external_temperature\")\n| summarize avg_temp=avg(value) by cluster, logical=substring(logical,0,3),device,quantity,timestamp=bin(timestamp,$intervall)//$__interval)\n| project logical, avg_temp, timestamp\n| order by logical asc\n",
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Durchschnitt °C",
+      "type": "gauge"
+    },
+    {
       "datasource": null,
       "fieldConfig": {
         "defaults": {
@@ -234,7 +292,7 @@
         "h": 7,
         "w": 6,
         "x": 18,
-        "y": 5
+        "y": 11
       },
       "id": 20,
       "options": {
@@ -248,67 +306,12 @@
       "type": "text"
     },
     {
-      "cards": {
-        "cardHSpacing": 2,
-        "cardMinWidth": 5,
-        "cardRound": null,
-        "cardVSpacing": 2
-      },
-      "color": {
-        "cardColor": "#b4ff00",
-        "colorScale": "sqrt",
-        "colorScheme": "interpolateSpectral",
-        "defaultColor": "#757575",
-        "exponent": 0.5,
-        "mode": "spectrum",
-        "thresholds": [
-          {
-            "color": "#b58900",
-            "tooltip": "yellow",
-            "value": 0
-          },
-          {
-            "color": "#cb4b16",
-            "tooltip": "orange",
-            "value": 1
-          },
-          {
-            "color": "#dc322f",
-            "tooltip": "red",
-            "value": 2
-          },
-          {
-            "color": "#d33682",
-            "tooltip": "magenta",
-            "value": 3
-          },
-          {
-            "color": "#6c71c4",
-            "tooltip": "violet",
-            "value": 4
-          },
-          {
-            "color": "#268bd2",
-            "tooltip": "blue",
-            "value": 5
-          },
-          {
-            "color": "#2aa198",
-            "tooltip": "cyan",
-            "value": 6
-          },
-          {
-            "color": "#859900",
-            "tooltip": "green",
-            "value": 7
-          }
-        ]
-      },
-      "data": {
-        "decimals": null,
-        "unitFormat": "short"
-      },
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
       "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
+      "decimals": null,
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -336,59 +339,107 @@
               }
             ]
           },
-          "unit": "short"
+          "unit": "kwatth"
         },
         "overrides": []
       },
+      "fill": 0,
+      "fillGradient": 0,
       "gridPos": {
-        "h": 6,
-        "w": 14,
+        "h": 5,
+        "w": 18,
         "x": 0,
-        "y": 11
+        "y": 13
       },
-      "highlightCards": true,
-      "id": 12,
+      "hiddenSeries": false,
+      "id": 21,
       "legend": {
-        "show": true
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "hideEmpty": false,
+        "hideZero": false,
+        "max": false,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 440,
+        "sort": "min",
+        "sortDesc": true,
+        "total": false,
+        "values": true
       },
-      "nullPointMode": "as empty",
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "percentage": false,
       "pluginVersion": "7.1.1",
+      "pointradius": 0.5,
+      "points": true,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
       "targets": [
         {
           "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3) in (\"TMP\",\"AGT\") and quantity==\"radiator_sensor_temperature\")\n    or (substring(logical,0,3) in (\"ATS\",\"ATF\") and quantity==\"external_temperature\")\n| summarize toint(value=avg(value)) by cluster, logical,device,quantity,timestamp=bin(timestamp,$__interval)\n| project logical, value, timestamp\n\n\n",
+          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3) in (\"WMZ\"))\n| summarize value=avg(value) by cluster, logical=strcat(logical,\" \", position, \" \", direction),device,quantity,timestamp=bin(timestamp,$intervall)\n| project logical, value, timestamp\n| order by timestamp asc\n\n\n",
           "refId": "A",
           "resultFormat": "time_series"
         }
       ],
+      "thresholds": [],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
-      "title": "Temperaturen",
+      "title": "Wärmemengenzähler",
       "tooltip": {
-        "show": true
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
       },
-      "type": "flant-statusmap-panel",
-      "useMax": true,
-      "xAxis": {
-        "labelFormat": "%a %m/%d",
-        "minBucketWidthToShowWeekends": 4,
+      "transformations": [],
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
         "show": true,
-        "showCrosshair": true,
-        "showWeekends": true
+        "values": []
       },
-      "yAxis": {
-        "show": true,
-        "showCrosshair": false
-      },
-      "yAxisSort": "a → z"
+      "yaxes": [
+        {
+          "format": "kwatth",
+          "label": "Zählerstand",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": "kWh",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     },
     {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
       "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
       "fieldConfig": {
         "defaults": {
-          "custom": {
-            "align": null
-          },
+          "custom": {},
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -406,38 +457,96 @@
         },
         "overrides": []
       },
+      "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
-        "h": 6,
-        "w": 4,
-        "x": 14,
-        "y": 11
+        "h": 9,
+        "w": 18,
+        "x": 0,
+        "y": 18
       },
-      "id": 23,
-      "options": {
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
+      "hiddenSeries": false,
+      "id": 24,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": false,
+        "hideEmpty": false,
+        "hideZero": true,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "total": false,
+        "values": true
       },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "percentage": false,
       "pluginVersion": "7.1.1",
+      "pointradius": 1,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "/.value.*/",
+          "bars": true,
+          "lines": true,
+          "yaxis": 2
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": true,
       "targets": [
         {
           "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3) in (\"TMP\",\"AGT\") and quantity==\"radiator_sensor_temperature\")\n    or (substring(logical,0,3) in (\"ATS\",\"ATF\") and quantity==\"external_temperature\")\n| summarize avg_temp=avg(value) by cluster, logical=substring(logical,0,3),device,quantity,timestamp=bin(timestamp,$__interval)\n| project logical, avg_temp, timestamp\n| order by logical asc\n",
+          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3)==\"WMZ\") \n| summarize value=max(value)-min(value) by cluster, logical=strcat(logical,\" \", position, \" \", direction),device,quantity,timestamp=bin(timestamp,$intervall)\n| project logical, value, timestamp\n| order by timestamp asc\n",
           "refId": "A",
           "resultFormat": "time_series"
         }
       ],
+      "thresholds": [],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
-      "title": "Durchschnitt °C",
-      "type": "gauge"
+      "title": "Wärmemengen pro Tag",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "kwatth",
+          "label": "kWh pro Tag",
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "format": "kwatth",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     },
     {
       "circleMaxSize": "10",
@@ -473,10 +582,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 16,
+        "h": 9,
         "w": 6,
         "x": 18,
-        "y": 12
+        "y": 18
       },
       "hideEmpty": false,
       "hideZero": false,
@@ -518,248 +627,6 @@
       "valueName": "avg"
     },
     {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
-      "decimals": null,
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": null
-          },
-          "links": [
-            {
-              "targetBlank": true,
-              "title": "",
-              "url": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=0004-04604&var-sensor=${__value.text}"
-            }
-          ],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "fill": 0,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 5,
-        "w": 18,
-        "x": 0,
-        "y": 17
-      },
-      "hiddenSeries": false,
-      "id": 21,
-      "legend": {
-        "alignAsTable": true,
-        "avg": false,
-        "current": true,
-        "hideEmpty": false,
-        "hideZero": false,
-        "max": false,
-        "min": true,
-        "rightSide": true,
-        "show": true,
-        "sort": "min",
-        "sortDesc": true,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "percentage": false,
-      "pluginVersion": "7.1.1",
-      "pointradius": 0.5,
-      "points": true,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3) in (\"WMZ\"))\n| summarize value=avg(value) by cluster, logical,device,quantity,timestamp=bin(timestamp,$__interval)\n| project logical, value, timestamp\n\n\n",
-          "refId": "A",
-          "resultFormat": "time_series"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Wärmemengen",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "transformations": [],
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "label": "",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": "kWh",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": false
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {},
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 6,
-        "w": 18,
-        "x": 0,
-        "y": 22
-      },
-      "hiddenSeries": false,
-      "id": 16,
-      "legend": {
-        "alignAsTable": true,
-        "avg": true,
-        "current": false,
-        "hideEmpty": false,
-        "hideZero": true,
-        "max": true,
-        "min": true,
-        "rightSide": true,
-        "show": true,
-        "total": true,
-        "values": true
-      },
-      "lines": false,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "percentage": false,
-      "pluginVersion": "7.1.1",
-      "pointradius": 1,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [
-        {
-          "alias": "/.value.*/",
-          "bars": true,
-          "lines": true,
-          "yaxis": 2
-        }
-      ],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3)==\"WMZ\") \n| summarize value=avg(value) by cluster, logical,device,quantity,timestamp=bin(timestamp,1d)\n| sort by logical asc, timestamp asc\n| serialize prevValue = prev(value)\n| serialize prevTS = prev(timestamp)\n| extend daysDiff = datetime_diff('day', timestamp,prevTS)\n| extend delta = (value - prevValue)/daysDiff \n| filter delta >=0\n| project logical, delta, timestamp\n",
-          "refId": "A",
-          "resultFormat": "time_series"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Wärmemengen pro Tag",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "kwatth",
-          "label": "kWh pro Tag",
-          "logBase": 10,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "kwatth",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": false
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
       "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
       "fieldConfig": {
         "defaults": {
@@ -789,7 +656,7 @@
             "allowDrawio": true,
             "bgColor": "rgb(0, 0, 0)",
             "center": true,
-            "csv": "## See more information for the syntax at https://drawio-app.com/import-from-csv-to-drawio/\n##\n## Example CSV. Use ## for comments and # for configuration.\n## The following names are reserved and should not be used (or ignored):\n## id, tooltip, placeholder(s), link and label (see below)\n##\n#\n## Node label with placeholders and HTML.\n## Default is '%name_of_first_column%'.\n#\n# label: %name%<br><i style=\"color:gray;\">%position%</i><br><a href=\"mailto:%email%\">Email</a>\n#\n## Node style (placeholders are replaced once).\n## Default is the current style for nodes.\n#\n# style: label;image=%image%;whiteSpace=wrap;html=1;rounded=1;fillColor=%fill%;strokeColor=%stroke%;\n#\n## Parent style for nodes with child nodes (placeholders are replaced once).\n#\n# parentstyle: swimlane;whiteSpace=wrap;html=1;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;\n#\n## Optional column name that contains a reference to a named style in styles.\n## Default is the current style for nodes.\n#\n# stylename: -\n#\n## JSON for named styles of the form {\"name\": \"style\", \"name\": \"style\"} where style is a cell style with\n## placeholders that are replaced once.\n#\n# styles: -\n#\n## Optional column name that contains a reference to a named label in labels.\n## Default is the current label.\n#\n# labelname: -\n#\n## JSON for named labels of the form {\"name\": \"label\", \"name\": \"label\"} where label is a cell label with\n## placeholders.\n#\n# labels: -\n#\n## Uses the given column name as the identity for cells (updates existing cells).\n## Default is no identity (empty value or -).\n#\n# identity: -\n#\n## Uses the given column name as the parent reference for cells. Default is no parent (empty or -).\n## The identity above is used for resolving the reference so it must be specified.\n#\n# parent: -\n#\n## Adds a prefix to the identity of cells to make sure they do not collide with existing cells (whose\n## IDs are numbers from 0..n, sometimes with a GUID prefix in the context of realtime collaboration).\n## Default is csvimport-.\n#\n# namespace: csvimport-\n#\n## Connections between rows (\"from\": source colum, \"to\": target column).\n## Label, style and invert are optional. Defaults are '', current style and false.\n## If placeholders are used in the style, they are replaced with data from the source.\n## An optional placeholders can be set to target to use data from the target instead.\n## In addition to label, an optional fromlabel and tolabel can be used to name the column\n## that contains the text for the label in the edges source or target (invert ignored).\n## The label is concatenated in the form fromlabel + label + tolabel if all are defined.\n## The target column may contain a comma-separated list of values.\n## Multiple connect entries are allowed.\n#\n# connect: {\"from\": \"manager\", \"to\": \"name\", \"invert\": true, \"label\": \"manages\", \\\n#          \"style\": \"curved=1;endArrow=blockThin;endFill=1;fontSize=11;\"}\n# connect: {\"from\": \"refs\", \"to\": \"id\", \"style\": \"curved=1;fontSize=11;\"}\n#\n## Node x-coordinate. Possible value is a column name. Default is empty. Layouts will\n## override this value.\n#\n# left: \n#\n## Node y-coordinate. Possible value is a column name. Default is empty. Layouts will\n## override this value.\n#\n# top: \n#\n## Node width. Possible value is a number (in px), auto or an @ sign followed by a column\n## name that contains the value for the width. Default is auto.\n#\n# width: auto\n#\n## Node height. Possible value is a number (in px), auto or an @ sign followed by a column\n## name that contains the value for the height. Default is auto.\n#\n# height: auto\n#\n## Padding for autosize. Default is 0.\n#\n# padding: -12\n#\n## Comma-separated list of ignored columns for metadata. (These can be\n## used for connections and styles but will not be added as metadata.)\n#\n# ignore: id,image,fill,stroke,refs,manager\n#\n## Column to be renamed to link attribute (used as link).\n#\n# link: url\n#\n## Spacing between nodes. Default is 40.\n#\n# nodespacing: 40\n#\n## Spacing between levels of hierarchical layouts. Default is 100.\n#\n# levelspacing: 100\n#\n## Spacing between parallel edges. Default is 40. Use 0 to disable.\n#\n# edgespacing: 40\n#\n## Name or JSON of layout. Possible values are auto, none, verticaltree, horizontaltree,\n## verticalflow, horizontalflow, organic, circle or a JSON string as used in Layout, Apply.\n## Default is auto.\n#\n# layout: auto\n#\n## ---- CSV below this line. First line are column names. ----\nname,position,id,location,manager,email,fill,stroke,refs,url,image\nEvan Miller,CFO,emi,Office 1,,me@example.com,#dae8fc,#6c8ebf,,https://www.draw.io,https://cdn3.iconfinder.com/data/icons/user-avatars-1/512/users-9-2-128.png\nEdward Morrison,Brand Manager,emo,Office 2,Evan Miller,me@example.com,#d5e8d4,#82b366,,https://www.draw.io,https://cdn3.iconfinder.com/data/icons/user-avatars-1/512/users-10-3-128.png\nRon Donovan,System Admin,rdo,Office 3,Evan Miller,me@example.com,#d5e8d4,#82b366,\"emo,tva\",https://www.draw.io,https://cdn3.iconfinder.com/data/icons/user-avatars-1/512/users-2-128.png\nTessa Valet,HR Director,tva,Office 4,Evan Miller,me@example.com,#d5e8d4,#82b366,,https://www.draw.io,https://cdn3.iconfinder.com/data/icons/user-avatars-1/512/users-3-128.png\n",
+            "csv": "csv",
             "download": true,
             "editorTheme": "dark",
             "editorUrl": "https://www.draw.io",
@@ -812,7 +679,7 @@
         "h": 14,
         "w": 24,
         "x": 0,
-        "y": 28
+        "y": 27
       },
       "id": 9,
       "newFlag": false,
@@ -821,279 +688,11 @@
         "rulesData": [
           {
             "aggregation": "current_notnull",
-            "alias": "All",
-            "colors": [
-              "rgb(255, 255, 255)"
-            ],
-            "column": "Time",
-            "dateFormat": "YYYY-MM-DD HH:mm:ss",
-            "decimals": 1,
-            "eventData": [],
-            "eventProp": "value",
-            "eventRegEx": true,
-            "gradient": false,
-            "hidden": false,
-            "invert": false,
-            "linkData": [
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP01",
-                "pattern": "TMP01"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP02",
-                "pattern": "TMP02"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP03",
-                "pattern": "TMP03"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP04",
-                "pattern": "TMP04"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP05",
-                "pattern": "TMP05"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP06",
-                "pattern": "TMP06"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP07",
-                "pattern": "TMP07"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP08",
-                "pattern": "TMP08"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP09",
-                "pattern": "TMP09"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP10",
-                "pattern": "TMP10"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP11",
-                "pattern": "TMP11"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP12",
-                "pattern": "TMP12"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP13",
-                "pattern": "TMP13"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP14",
-                "pattern": "TMP14"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP15",
-                "pattern": "TMP15"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP16",
-                "pattern": "TMP16"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP17",
-                "pattern": "TMP17"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP18",
-                "pattern": "TMP18"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP19",
-                "pattern": "TMP19"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP20",
-                "pattern": "TMP20"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP21",
-                "pattern": "TMP21"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP22",
-                "pattern": "TMP22"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP23",
-                "pattern": "TMP23"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP24",
-                "pattern": "TMP24"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP25",
-                "pattern": "TMP25"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=ATS01",
-                "pattern": "ATS01"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=WMZ01",
-                "pattern": "WMZ01"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=WMZ02",
-                "pattern": "WMZ02"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=WMZ03",
-                "pattern": "WMZ03"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=ATF01",
-                "pattern": "ATF01"
-              },
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=AGTS",
-                "pattern": "AGTS"
-              }
-            ],
-            "linkProp": "value",
-            "linkRegEx": true,
-            "mappingType": 1,
-            "metricType": "serie",
-            "order": 1,
-            "overlayIcon": false,
-            "pattern": "/.*/",
-            "rangeData": [],
-            "reduce": true,
-            "refId": "A",
-            "sanitize": false,
-            "shapeData": [],
-            "shapeProp": "value",
-            "shapeRegEx": false,
-            "stringThresholds": [],
-            "textData": [],
-            "textProp": "value",
-            "textRegEx": true,
-            "thresholds": [],
-            "tooltip": true,
-            "tooltipColors": true,
-            "tooltipLabel": "",
-            "tooltipOn": "a",
-            "tpDirection": "h",
-            "tpGraph": true,
-            "tpGraphHigh": null,
-            "tpGraphLow": null,
-            "tpGraphScale": "linear",
-            "tpGraphSize": "200px",
-            "tpGraphType": "line",
-            "type": "number",
-            "unit": "none",
-            "valueData": []
-          },
-          {
-            "aggregation": "current_notnull",
             "alias": "TMP01",
             "colors": [
               "#C4162A",
-              "#FA6400",
-              "#37872D"
+              "#3274D9",
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -1104,21 +703,13 @@
             "gradient": false,
             "hidden": false,
             "invert": false,
-            "linkData": [
-              {
-                "hidden": false,
-                "linkOn": "a",
-                "linkParams": false,
-                "linkUrl": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=$lg&from=$__from&to=$__to&var-sensor=TMP01",
-                "pattern": "TMP01"
-              }
-            ],
+            "linkData": [],
             "linkProp": "value",
             "linkRegEx": true,
             "mappingType": 1,
             "metricType": "serie",
-            "order": 2,
-            "overlayIcon": true,
+            "order": 1,
+            "overlayIcon": false,
             "pattern": "TMP01",
             "rangeData": [],
             "reduce": true,
@@ -1147,7 +738,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              30,
+              5,
               50
             ],
             "tooltip": true,
@@ -1170,8 +761,8 @@
             "alias": "TMP02",
             "colors": [
               "#C4162A",
-              "#FA6400",
-              "#37872D"
+              "#3274D9",
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -1187,8 +778,8 @@
             "linkRegEx": true,
             "mappingType": 1,
             "metricType": "serie",
-            "order": 3,
-            "overlayIcon": true,
+            "order": 2,
+            "overlayIcon": false,
             "pattern": "TMP02",
             "rangeData": [],
             "reduce": true,
@@ -1217,7 +808,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              30,
+              5,
               50
             ],
             "tooltip": true,
@@ -1240,8 +831,8 @@
             "alias": "TMP03",
             "colors": [
               "#C4162A",
-              "#FA6400",
-              "#37872D"
+              "#3274D9",
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -1257,8 +848,8 @@
             "linkRegEx": true,
             "mappingType": 1,
             "metricType": "serie",
-            "order": 4,
-            "overlayIcon": true,
+            "order": 3,
+            "overlayIcon": false,
             "pattern": "TMP03",
             "rangeData": [],
             "reduce": true,
@@ -1287,7 +878,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              30,
+              5,
               50
             ],
             "tooltip": true,
@@ -1310,8 +901,8 @@
             "alias": "TMP04",
             "colors": [
               "#C4162A",
-              "#FA6400",
-              "#37872D"
+              "#3274D9",
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -1327,8 +918,8 @@
             "linkRegEx": true,
             "mappingType": 1,
             "metricType": "serie",
-            "order": 5,
-            "overlayIcon": true,
+            "order": 4,
+            "overlayIcon": false,
             "pattern": "TMP04",
             "rangeData": [],
             "reduce": true,
@@ -1357,7 +948,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              30,
+              5,
               50
             ],
             "tooltip": true,
@@ -1380,8 +971,8 @@
             "alias": "TMP05",
             "colors": [
               "#C4162A",
-              "#FA6400",
-              "#37872D"
+              "#3274D9",
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -1397,8 +988,8 @@
             "linkRegEx": true,
             "mappingType": 1,
             "metricType": "serie",
-            "order": 6,
-            "overlayIcon": true,
+            "order": 5,
+            "overlayIcon": false,
             "pattern": "TMP05",
             "rangeData": [],
             "reduce": true,
@@ -1427,7 +1018,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              30,
+              5,
               50
             ],
             "tooltip": true,
@@ -1446,12 +1037,85 @@
             "valueData": []
           },
           {
+            "aggregation": "max",
+            "alias": "WMZ02",
+            "colors": [
+              "rgb(51, 48, 46)"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 0,
+            "eventData": [
+              {
+                "eventOn": -1,
+                "hidden": false,
+                "pattern": "WMZ02",
+                "style": "width",
+                "value": "60"
+              }
+            ],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": false,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 6,
+            "overlayIcon": false,
+            "pattern": "WMZ02",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "WMZ02",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": false,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "WMZ02",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [],
+            "tooltip": true,
+            "tooltipColors": false,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "kwatth",
+            "valueData": []
+          },
+          {
             "aggregation": "current_notnull",
             "alias": "TMP06",
             "colors": [
               "#C4162A",
-              "#FA6400",
-              "#37872D"
+              "#3274D9",
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -1468,7 +1132,7 @@
             "mappingType": 1,
             "metricType": "serie",
             "order": 7,
-            "overlayIcon": true,
+            "overlayIcon": false,
             "pattern": "TMP06",
             "rangeData": [],
             "reduce": true,
@@ -1497,7 +1161,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              30,
+              5,
               50
             ],
             "tooltip": true,
@@ -1520,8 +1184,8 @@
             "alias": "TMP07",
             "colors": [
               "#C4162A",
-              "#FA6400",
-              "#37872D"
+              "#3274D9",
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -1538,7 +1202,7 @@
             "mappingType": 1,
             "metricType": "serie",
             "order": 8,
-            "overlayIcon": true,
+            "overlayIcon": false,
             "pattern": "TMP07",
             "rangeData": [],
             "reduce": true,
@@ -1567,7 +1231,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              30,
+              5,
               50
             ],
             "tooltip": true,
@@ -1590,8 +1254,8 @@
             "alias": "TMP08",
             "colors": [
               "#C4162A",
-              "#FA6400",
-              "#37872D"
+              "#3274D9",
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -1608,7 +1272,7 @@
             "mappingType": 1,
             "metricType": "serie",
             "order": 9,
-            "overlayIcon": true,
+            "overlayIcon": false,
             "pattern": "TMP08",
             "rangeData": [],
             "reduce": true,
@@ -1637,7 +1301,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              30,
+              5,
               50
             ],
             "tooltip": true,
@@ -1660,8 +1324,8 @@
             "alias": "TMP09",
             "colors": [
               "#C4162A",
-              "#FA6400",
-              "#37872D"
+              "#3274D9",
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -1678,7 +1342,7 @@
             "mappingType": 1,
             "metricType": "serie",
             "order": 10,
-            "overlayIcon": true,
+            "overlayIcon": false,
             "pattern": "TMP09",
             "rangeData": [],
             "reduce": true,
@@ -1707,7 +1371,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              30,
+              5,
               50
             ],
             "tooltip": true,
@@ -1730,8 +1394,8 @@
             "alias": "TMP10",
             "colors": [
               "#C4162A",
-              "#FA6400",
-              "#37872D"
+              "#3274D9",
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -1748,7 +1412,7 @@
             "mappingType": 1,
             "metricType": "serie",
             "order": 11,
-            "overlayIcon": true,
+            "overlayIcon": false,
             "pattern": "TMP10",
             "rangeData": [],
             "reduce": true,
@@ -1777,7 +1441,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              30,
+              5,
               50
             ],
             "tooltip": true,
@@ -1800,8 +1464,8 @@
             "alias": "TMP11",
             "colors": [
               "#C4162A",
-              "#FA6400",
-              "#37872D"
+              "#3274D9",
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -1818,7 +1482,7 @@
             "mappingType": 1,
             "metricType": "serie",
             "order": 12,
-            "overlayIcon": true,
+            "overlayIcon": false,
             "pattern": "TMP11",
             "rangeData": [],
             "reduce": true,
@@ -1847,7 +1511,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              30,
+              5,
               50
             ],
             "tooltip": true,
@@ -1870,8 +1534,8 @@
             "alias": "TMP12",
             "colors": [
               "#C4162A",
-              "#FA6400",
-              "#37872D"
+              "#3274D9",
+              "#3274D9"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -1888,7 +1552,7 @@
             "mappingType": 1,
             "metricType": "serie",
             "order": 13,
-            "overlayIcon": true,
+            "overlayIcon": false,
             "pattern": "TMP12",
             "rangeData": [],
             "reduce": true,
@@ -1917,7 +1581,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              30,
+              5,
               50
             ],
             "tooltip": true,
@@ -1940,8 +1604,8 @@
             "alias": "TMP13",
             "colors": [
               "#C4162A",
-              "#FA6400",
-              "#37872D"
+              "#3274D9",
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -1958,7 +1622,7 @@
             "mappingType": 1,
             "metricType": "serie",
             "order": 14,
-            "overlayIcon": true,
+            "overlayIcon": false,
             "pattern": "TMP13",
             "rangeData": [],
             "reduce": true,
@@ -1987,7 +1651,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              30,
+              5,
               50
             ],
             "tooltip": true,
@@ -2010,8 +1674,8 @@
             "alias": "TMP14",
             "colors": [
               "#C4162A",
-              "#FA6400",
-              "#37872D"
+              "#3274D9",
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -2028,7 +1692,7 @@
             "mappingType": 1,
             "metricType": "serie",
             "order": 15,
-            "overlayIcon": true,
+            "overlayIcon": false,
             "pattern": "TMP14",
             "rangeData": [],
             "reduce": true,
@@ -2057,7 +1721,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              30,
+              5,
               50
             ],
             "tooltip": true,
@@ -2080,8 +1744,8 @@
             "alias": "TMP15",
             "colors": [
               "#C4162A",
-              "#FA6400",
-              "#37872D"
+              "#3274D9",
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -2098,7 +1762,7 @@
             "mappingType": 1,
             "metricType": "serie",
             "order": 16,
-            "overlayIcon": true,
+            "overlayIcon": false,
             "pattern": "TMP15",
             "rangeData": [],
             "reduce": true,
@@ -2127,7 +1791,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              30,
+              5,
               50
             ],
             "tooltip": true,
@@ -2150,8 +1814,8 @@
             "alias": "TMP16",
             "colors": [
               "#C4162A",
-              "#FA6400",
-              "#37872D"
+              "#3274D9",
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -2168,7 +1832,7 @@
             "mappingType": 1,
             "metricType": "serie",
             "order": 17,
-            "overlayIcon": true,
+            "overlayIcon": false,
             "pattern": "TMP16",
             "rangeData": [],
             "reduce": true,
@@ -2197,7 +1861,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              30,
+              5,
               50
             ],
             "tooltip": true,
@@ -2220,8 +1884,8 @@
             "alias": "TMP17",
             "colors": [
               "#C4162A",
-              "#FA6400",
-              "#37872D"
+              "#3274D9",
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -2238,7 +1902,7 @@
             "mappingType": 1,
             "metricType": "serie",
             "order": 18,
-            "overlayIcon": true,
+            "overlayIcon": false,
             "pattern": "TMP17",
             "rangeData": [],
             "reduce": true,
@@ -2267,7 +1931,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              30,
+              5,
               50
             ],
             "tooltip": true,
@@ -2290,8 +1954,8 @@
             "alias": "TMP18",
             "colors": [
               "#C4162A",
-              "#FA6400",
-              "#37872D"
+              "#3274D9",
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -2308,7 +1972,7 @@
             "mappingType": 1,
             "metricType": "serie",
             "order": 19,
-            "overlayIcon": true,
+            "overlayIcon": false,
             "pattern": "TMP18",
             "rangeData": [],
             "reduce": true,
@@ -2337,7 +2001,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              30,
+              5,
               50
             ],
             "tooltip": true,
@@ -2360,8 +2024,8 @@
             "alias": "TMP19",
             "colors": [
               "#C4162A",
-              "#FA6400",
-              "#37872D"
+              "#3274D9",
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -2378,7 +2042,7 @@
             "mappingType": 1,
             "metricType": "serie",
             "order": 20,
-            "overlayIcon": true,
+            "overlayIcon": false,
             "pattern": "TMP19",
             "rangeData": [],
             "reduce": true,
@@ -2407,7 +2071,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              30,
+              5,
               50
             ],
             "tooltip": true,
@@ -2430,8 +2094,8 @@
             "alias": "TMP20",
             "colors": [
               "#C4162A",
-              "#FA6400",
-              "#37872D"
+              "#3274D9",
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -2448,7 +2112,7 @@
             "mappingType": 1,
             "metricType": "serie",
             "order": 21,
-            "overlayIcon": true,
+            "overlayIcon": false,
             "pattern": "TMP20",
             "rangeData": [],
             "reduce": true,
@@ -2477,7 +2141,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              30,
+              5,
               50
             ],
             "tooltip": true,
@@ -2500,8 +2164,8 @@
             "alias": "TMP21",
             "colors": [
               "#C4162A",
-              "#FA6400",
-              "#37872D"
+              "#3274D9",
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -2518,7 +2182,7 @@
             "mappingType": 1,
             "metricType": "serie",
             "order": 22,
-            "overlayIcon": true,
+            "overlayIcon": false,
             "pattern": "TMP21",
             "rangeData": [],
             "reduce": true,
@@ -2547,7 +2211,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              30,
+              5,
               50
             ],
             "tooltip": true,
@@ -2570,8 +2234,8 @@
             "alias": "TMP22",
             "colors": [
               "#C4162A",
-              "#FA6400",
-              "#37872D"
+              "#3274D9",
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -2588,7 +2252,7 @@
             "mappingType": 1,
             "metricType": "serie",
             "order": 23,
-            "overlayIcon": true,
+            "overlayIcon": false,
             "pattern": "TMP22",
             "rangeData": [],
             "reduce": true,
@@ -2617,7 +2281,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              30,
+              5,
               50
             ],
             "tooltip": true,
@@ -2640,8 +2304,8 @@
             "alias": "TMP23",
             "colors": [
               "#C4162A",
-              "#FA6400",
-              "#37872D"
+              "#3274D9",
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -2658,7 +2322,7 @@
             "mappingType": 1,
             "metricType": "serie",
             "order": 24,
-            "overlayIcon": true,
+            "overlayIcon": false,
             "pattern": "TMP23",
             "rangeData": [],
             "reduce": true,
@@ -2687,7 +2351,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              30,
+              5,
               50
             ],
             "tooltip": true,
@@ -2710,8 +2374,8 @@
             "alias": "TMP24",
             "colors": [
               "#C4162A",
-              "#FA6400",
-              "#37872D"
+              "#3274D9",
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -2728,7 +2392,7 @@
             "mappingType": 1,
             "metricType": "serie",
             "order": 25,
-            "overlayIcon": true,
+            "overlayIcon": false,
             "pattern": "TMP24",
             "rangeData": [],
             "reduce": true,
@@ -2757,7 +2421,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              30,
+              5,
               50
             ],
             "tooltip": true,
@@ -2780,8 +2444,8 @@
             "alias": "TMP25",
             "colors": [
               "#C4162A",
-              "#FA6400",
-              "#37872D"
+              "#3274D9",
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -2798,7 +2462,7 @@
             "mappingType": 1,
             "metricType": "serie",
             "order": 26,
-            "overlayIcon": true,
+            "overlayIcon": false,
             "pattern": "TMP25",
             "rangeData": [],
             "reduce": true,
@@ -2827,7 +2491,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              30,
+              5,
               50
             ],
             "tooltip": true,
@@ -2850,7 +2514,7 @@
             "alias": "ATS01",
             "colors": [
               "#8AB8FF",
-              "#FA6400",
+              "#3274D9",
               "#C4162A"
             ],
             "column": "Time",
@@ -2923,7 +2587,7 @@
             "alias": "ATF01",
             "colors": [
               "#8AB8FF",
-              "#FA6400",
+              "#3274D9",
               "#C4162A"
             ],
             "column": "Time",
@@ -2996,7 +2660,7 @@
             "alias": "AGTS",
             "colors": [
               "#8AB8FF",
-              "#FA6400",
+              "#3274D9",
               "#C4162A"
             ],
             "column": "Time",
@@ -3139,79 +2803,6 @@
           },
           {
             "aggregation": "max",
-            "alias": "WMZ02",
-            "colors": [
-              "rgb(51, 48, 46)"
-            ],
-            "column": "Time",
-            "dateFormat": "YYYY-MM-DD HH:mm:ss",
-            "decimals": 0,
-            "eventData": [
-              {
-                "eventOn": -1,
-                "hidden": false,
-                "pattern": "WMZ02",
-                "style": "width",
-                "value": "60"
-              }
-            ],
-            "eventProp": "value",
-            "eventRegEx": false,
-            "gradient": false,
-            "hidden": false,
-            "invert": false,
-            "linkData": [],
-            "linkProp": "value",
-            "linkRegEx": true,
-            "mappingType": 1,
-            "metricType": "serie",
-            "order": 31,
-            "overlayIcon": false,
-            "pattern": "WMZ02",
-            "rangeData": [],
-            "reduce": true,
-            "refId": "A",
-            "sanitize": false,
-            "shapeData": [
-              {
-                "colorOn": "a",
-                "hidden": false,
-                "pattern": "WMZ02",
-                "style": "fillColor"
-              }
-            ],
-            "shapeProp": "value",
-            "shapeRegEx": false,
-            "stringThresholds": [],
-            "textData": [
-              {
-                "hidden": false,
-                "pattern": "WMZ02",
-                "textOn": "wmd",
-                "textPattern": "/.*/",
-                "textReplace": "anl"
-              }
-            ],
-            "textProp": "value",
-            "textRegEx": true,
-            "thresholds": [],
-            "tooltip": true,
-            "tooltipColors": false,
-            "tooltipLabel": "",
-            "tooltipOn": "a",
-            "tpDirection": "h",
-            "tpGraph": true,
-            "tpGraphHigh": null,
-            "tpGraphLow": null,
-            "tpGraphScale": "linear",
-            "tpGraphSize": "200px",
-            "tpGraphType": "line",
-            "type": "number",
-            "unit": "kwatth",
-            "valueData": []
-          },
-          {
-            "aggregation": "max",
             "alias": "WMZ03",
             "colors": [
               "rgb(51, 48, 46)"
@@ -3238,7 +2829,7 @@
             "linkRegEx": true,
             "mappingType": 1,
             "metricType": "serie",
-            "order": 32,
+            "order": 31,
             "overlayIcon": false,
             "pattern": "WMZ03",
             "rangeData": [],
@@ -3311,7 +2902,7 @@
             "linkRegEx": true,
             "mappingType": 1,
             "metricType": "serie",
-            "order": 33,
+            "order": 32,
             "overlayIcon": false,
             "pattern": "WMZ04",
             "rangeData": [],
@@ -3384,7 +2975,7 @@
             "linkRegEx": true,
             "mappingType": 1,
             "metricType": "serie",
-            "order": 34,
+            "order": 33,
             "overlayIcon": false,
             "pattern": "WMZ05",
             "rangeData": [],
@@ -3434,17 +3025,154 @@
       "targets": [
         {
           "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3) in (\"TMP\",\"AGT\") and quantity==\"radiator_sensor_temperature\")\n    or (substring(logical,0,3) in (\"ATS\",\"ATF\") and quantity==\"external_temperature\")\n    or (substring(logical,0,3)==\"WMZ\") \n| summarize value=avg(value) by cluster, logical,device,quantity,timestamp=bin(timestamp,$__interval)\n//| order by logical asc, device asc, quantity asc\n| project logical, value, timestamp\n",
+          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3) in (\"TMP\",\"AGT\") and quantity==\"radiator_sensor_temperature\")\n    or (substring(logical,0,3) in (\"ATS\",\"ATF\") and quantity==\"external_temperature\")\n    or (substring(logical,0,3)==\"WMZ\") \n| summarize value=avg(value) by cluster, logical,device,quantity,timestamp=bin(timestamp,$intervall)//$__interval)\n//| order by logical asc, device asc, quantity asc\n| project logical, value, timestamp\n| order by timestamp asc\n",
           "refId": "A",
           "resultFormat": "time_series"
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Strangschema (hover & click auf Sensor für Details)",
+      "title": "Strangschema",
       "type": "agenty-flowcharting-panel",
       "valueName": "current",
       "version": "0.9.0"
+    },
+    {
+      "cards": {
+        "cardHSpacing": 2,
+        "cardMinWidth": 5,
+        "cardRound": null,
+        "cardVSpacing": 2
+      },
+      "color": {
+        "cardColor": "#b4ff00",
+        "colorScale": "sqrt",
+        "colorScheme": "interpolateSpectral",
+        "defaultColor": "#757575",
+        "exponent": 0.5,
+        "max": 70,
+        "min": 0,
+        "mode": "spectrum",
+        "thresholds": [
+          {
+            "color": "#b58900",
+            "tooltip": "yellow",
+            "value": 0
+          },
+          {
+            "color": "#cb4b16",
+            "tooltip": "orange",
+            "value": 1
+          },
+          {
+            "color": "#dc322f",
+            "tooltip": "red",
+            "value": 2
+          },
+          {
+            "color": "#d33682",
+            "tooltip": "magenta",
+            "value": 3
+          },
+          {
+            "color": "#6c71c4",
+            "tooltip": "violet",
+            "value": 4
+          },
+          {
+            "color": "#268bd2",
+            "tooltip": "blue",
+            "value": 5
+          },
+          {
+            "color": "#2aa198",
+            "tooltip": "cyan",
+            "value": 6
+          },
+          {
+            "color": "#859900",
+            "tooltip": "green",
+            "value": 7
+          }
+        ]
+      },
+      "data": {
+        "decimals": null,
+        "unitFormat": "short"
+      },
+      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": null
+          },
+          "links": [
+            {
+              "targetBlank": true,
+              "title": "",
+              "url": "http://10.196.201.37:9300/d/bJuGuQVGz/tsm-sensor?orgId=1&var-lg=0004-04604&var-sensor=${__value.text}"
+            }
+          ],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 24,
+        "x": 0,
+        "y": 41
+      },
+      "highlightCards": true,
+      "id": 12,
+      "legend": {
+        "show": true
+      },
+      "nullPointMode": "as empty",
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "database": "dachsadxdb",
+          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3) in (\"TMP\",\"AGT\") and quantity==\"radiator_sensor_temperature\")\n    or (substring(logical,0,3) in (\"ATS\",\"ATF\") and quantity==\"external_temperature\")\n| summarize toint(value=avg(value)) by cluster, logical,device,quantity,timestamp=bin(timestamp,$intervall)//$__interval)\n| project logical, value, timestamp\n| order by timestamp asc\n\n\n",
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Temperaturen",
+      "tooltip": {
+        "show": true
+      },
+      "type": "flant-statusmap-panel",
+      "useMax": true,
+      "xAxis": {
+        "labelFormat": "%a %m/%d",
+        "minBucketWidthToShowWeekends": 4,
+        "show": true,
+        "showCrosshair": true,
+        "showWeekends": true
+      },
+      "yAxis": {
+        "show": true,
+        "showCrosshair": false
+      },
+      "yAxisSort": "a → z"
     }
   ],
   "refresh": false,
@@ -3475,19 +3203,46 @@
         "query": "",
         "skipUrlSync": false,
         "type": "constant"
+      },
+      {
+        "auto": false,
+        "auto_count": 30,
+        "auto_min": "10s",
+        "current": {
+          "selected": true,
+          "text": "1d",
+          "value": "1d"
+        },
+        "hide": 0,
+        "label": "Auflösung",
+        "name": "intervall",
+        "options": [
+          {
+            "selected": true,
+            "text": "1d",
+            "value": "1d"
+          },
+          {
+            "selected": false,
+            "text": "1h",
+            "value": "1h"
+          }
+        ],
+        "query": "1d,1h",
+        "queryValue": "",
+        "refresh": 2,
+        "skipUrlSync": false,
+        "type": "interval"
       }
     ]
   },
   "time": {
-    "from": "2020-07-07T04:23:06.237Z",
-    "to": "2020-08-06T04:23:06.237Z"
+    "from": "2020-05-09T00:00:00.000Z",
+    "to": "2020-08-01T00:00:00.000Z"
   },
   "timepicker": {
+    "hidden": false,
     "refresh_intervals": [
-      "10s",
-      "30s",
-      "1m",
-      "5m",
       "15m",
       "30m",
       "1h",
@@ -3495,8 +3250,8 @@
       "1d"
     ]
   },
-  "timezone": "",
+  "timezone": "utc",
   "title": "TSM Liegenschaft",
   "uid": "0RkTMgIMz",
-  "version": 20
+  "version": 44
 }
