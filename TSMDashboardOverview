@@ -17,9 +17,117 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 2,
-  "iteration": 1596687591410,
+  "iteration": 1596904232457,
   "links": [],
   "panels": [
+    {
+      "circleMaxSize": "10",
+      "circleMinSize": "2",
+      "colors": [
+        "rgb(46, 47, 48)",
+        "#1F60C4",
+        "#FF780A",
+        "#C4162A"
+      ],
+      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
+      "decimals": 0,
+      "esMetric": "Count",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": null
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 16,
+        "w": 10,
+        "x": 0,
+        "y": 0
+      },
+      "hideEmpty": false,
+      "hideZero": false,
+      "id": 20,
+      "initialZoom": "5",
+      "links": [],
+      "locationData": "table",
+      "mapCenter": "custom",
+      "mapCenterLatitude": "50.143",
+      "mapCenterLongitude": "8.571",
+      "maxDataPoints": 1,
+      "mouseWheelZoom": true,
+      "pluginVersion": "7.1.1",
+      "showLegend": false,
+      "stickyLabels": false,
+      "tableQueryOptions": {
+        "geohashField": "geohash",
+        "labelField": "Adresse",
+        "latitudeField": "latitude",
+        "longitudeField": "longitude",
+        "metricField": "value",
+        "queryType": "coordinates"
+      },
+      "targets": [
+        {
+          "database": "dachsadxdb",
+          "query": "\nlet f_unit = case(\n        \"$karte\"==\"Temperatur\",dynamic([\"deg_C\"]),\n        \"$karte\"==\"Wärmemenge\",dynamic([\"kWh\"]),\n        dynamic([\"deg_C\",\"kWh\"]));   \nlet f_quantity = case(\n        \"$karte\"==\"Temperatur\",dynamic([\"radiator_sensor_temperature\"]),\n        \"$karte\"==\"Wärmemenge\",dynamic([\"heat_energy\"]),\n        dynamic([\"radiator_sensor_temperature\",\"heat_energy\"])); \nlet allClusters = cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_AllClusterAnalytics()\n        | filter $__timeFilter(timestamp)\n        | filter unit in (f_unit)\n        | filter quantity in (f_quantity)\n        | summarize min_value=min(value), avg_value=avg(value), max_value=max(value), delta_value=max(value)-min(value), last_value=arg_max(value,timestamp), first_ts=min(timestamp), last_ts=max(timestamp), anzahl=count(), anzahl_lg=dcount(cluster);\ncluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_AllClusterAnalytics()\n| filter $__timeFilter(timestamp)\n| summarize min_value=min(value), avg_value=avg(value), max_value=max(value), delta_value=max(value)-min(value), last_value=arg_max(value,timestamp), first_ts=min(timestamp), last_ts=max(timestamp), anzahl=count() by cluster, lg, city, street, geocode, latitude, longitude, unit, quantity\n| filter unit in (f_unit)\n| filter quantity in (f_quantity)\n| extend value = case(\n        \"$karte\"==\"Temperatur\",100*toreal(avg_value/toint(toscalar(allClusters | project avg_value))),\n        \"$karte\"==\"Wärmemenge\",100*toreal(delta_value/toint(toscalar(allClusters | project delta_value))),\n        100*toreal(anzahl/toreal(toscalar(allClusters | project anzahl/anzahl_lg))))\n| filter city in (PUB_TSM_ClusterByCityGeo(\"$stadt\",$umkreis*1000))\n| project Adresse=strcat(city,\", \",street, \": $karte / Durchschnitt in %\"),ID=lg, value, longitude, latitude\n\n",
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "thresholds": "1,100, 150",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "$karte in % von Durchschnitt",
+      "type": "grafana-worldmap-panel",
+      "unitPlural": "",
+      "unitSingle": "",
+      "unitSingular": "",
+      "valueName": "avg"
+    },
+    {
+      "datasource": null,
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 19,
+        "y": 0
+      },
+      "id": 19,
+      "links": [],
+      "options": {
+        "content": "<img src=\"https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTjB-VTmWebcfNJjEW0xm7nTUzVDWAd-LnQCw&usqp=CAU\" alt=\"techem.de\">",
+        "mode": "html"
+      },
+      "pluginVersion": "7.1.0",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    },
     {
       "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
       "fieldConfig": {
@@ -52,8 +160,8 @@
       "gridPos": {
         "h": 3,
         "w": 4,
-        "x": 0,
-        "y": 0
+        "x": 19,
+        "y": 3
       },
       "id": 11,
       "options": {
@@ -110,9 +218,9 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 3,
-        "x": 4,
-        "y": 0
+        "w": 4,
+        "x": 19,
+        "y": 6
       },
       "id": 13,
       "options": {
@@ -146,263 +254,13 @@
     },
     {
       "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {},
-          "mappings": [],
-          "max": 100,
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 30
-              },
-              {
-                "color": "green",
-                "value": 70
-              }
-            ]
-          },
-          "unit": "celsius"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 4,
-        "x": 7,
-        "y": 0
-      },
-      "id": 15,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "7.1.1",
-      "targets": [
-        {
-          "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ClusterByTimespan(unixtime_milliseconds_todatetime($__from), unixtime_milliseconds_todatetime($__to))\n| filter city in (PUB_TSM_ClusterByCityGeo(\"$stadt\",$umkreis*1000))\n| summarize max(maxtemp)",
-          "refId": "A",
-          "resultFormat": "table"
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Maximale letzte Temperatur",
-      "transparent": true,
-      "type": "stat"
-    },
-    {
-      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {},
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              },
-              {
-                "color": "green",
-                "value": 60
-              }
-            ]
-          },
-          "unit": "celsius"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 4,
-        "x": 11,
-        "y": 0
-      },
-      "id": 21,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "7.1.1",
-      "targets": [
-        {
-          "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ClusterByTimespan(unixtime_milliseconds_todatetime($__from), unixtime_milliseconds_todatetime($__to))\n| filter city in (PUB_TSM_ClusterByCityGeo(\"$stadt\",$umkreis*1000))\n| summarize min(maxtemp)",
-          "refId": "A",
-          "resultFormat": "table"
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Minimale letzte Temperatur",
-      "transparent": true,
-      "type": "stat"
-    },
-    {
-      "datasource": null,
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 4,
-        "x": 19,
-        "y": 0
-      },
-      "id": 19,
-      "links": [
-        {
-          "targetBlank": true,
-          "title": "Techem.de",
-          "url": "Techem.de"
-        }
-      ],
-      "options": {
-        "content": "<img src=\"https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTjB-VTmWebcfNJjEW0xm7nTUzVDWAd-LnQCw&usqp=CAU\" alt=\"techem.de\">",
-        "mode": "html"
-      },
-      "pluginVersion": "7.1.0",
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "",
-      "transparent": true,
-      "type": "text"
-    },
-    {
-      "circleMaxSize": "5",
-      "circleMinSize": "2",
-      "colors": [
-        "#1F60C4",
-        "#C4162A",
-        "#FF780A",
-        "rgba(50, 172, 45, 0.97)"
-      ],
-      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
-      "decimals": 0,
-      "esMetric": "Count",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": null
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 22,
-        "w": 12,
-        "x": 0,
-        "y": 3
-      },
-      "hideEmpty": false,
-      "hideZero": false,
-      "id": 7,
-      "initialZoom": "5",
-      "links": [
-        {
-          "title": "...über Techem TSM",
-          "url": "https://newsroom.techem.de/fileadmin/de/newsroom/Pressemitteilungen/2019/Techem_ISH_Pressemeldung.pdf"
-        }
-      ],
-      "locationData": "table",
-      "mapCenter": "custom",
-      "mapCenterLatitude": "50.143",
-      "mapCenterLongitude": "8.571",
-      "maxDataPoints": 1,
-      "mouseWheelZoom": true,
-      "pluginVersion": "7.1.1",
-      "showLegend": false,
-      "stickyLabels": false,
-      "tableQueryOptions": {
-        "geohashField": "geohash",
-        "labelField": "Adresse",
-        "latitudeField": "latitude",
-        "longitudeField": "longitude",
-        "metricField": "MaxTemp",
-        "queryType": "coordinates"
-      },
-      "targets": [
-        {
-          "database": "dachsadxdb",
-          "query": "\ncluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ClusterByTimespan(unixtime_milliseconds_todatetime($__from), unixtime_milliseconds_todatetime($__to))\n| filter city in (PUB_TSM_ClusterByCityGeo(\"$stadt\",$umkreis*1000))\n| project Adresse=strcat(city,\", \",street),ID=lg, MaxTemp=maxtemp, Anzahl=anzahl,longitude, latitude\n| order by Adresse asc",
-          "refId": "A",
-          "resultFormat": "table"
-        }
-      ],
-      "thresholds": "10,50,70",
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Lokation",
-      "type": "grafana-worldmap-panel",
-      "unitPlural": "°C",
-      "unitSingle": "",
-      "unitSingular": "°C",
-      "valueName": "avg"
-    },
-    {
-      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
       "description": "",
       "fieldConfig": {
         "defaults": {
           "custom": {
             "align": null
           },
-          "links": [
-            {
-              "targetBlank": true,
-              "title": "Zeige Liegenschaft",
-              "url": "https://rlas-dckhst-03.az.eu.techem.corp:8081/d/0RkTMgIMz/tsm-liegenschaft?orgId=1&from=$__from&to=$__to&var-lg=${__data.fields[ID]}"
-            }
-          ],
+          "links": [],
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -558,29 +416,41 @@
                 "value": "center"
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Adresse"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": true,
+                    "title": "Zeige Liegenschaft",
+                    "url": "https://rlas-dckhst-03.az.eu.techem.corp:8081/d/0RkTMgIMz/tsm-liegenschaft?orgId=1&from=now-7d&to=now&var-intervall=1h&var-lg=${__data.fields[ID]}"
+                  }
+                ]
+              }
+            ]
           }
         ]
       },
       "gridPos": {
-        "h": 25,
-        "w": 11,
-        "x": 12,
-        "y": 3
+        "h": 21,
+        "w": 24,
+        "x": 0,
+        "y": 16
       },
       "id": 9,
-      "links": [
-        {
-          "targetBlank": true,
-          "title": "...über Techem TSM",
-          "url": "https://newsroom.techem.de/fileadmin/de/newsroom/Pressemitteilungen/2019/Techem_ISH_Pressemeldung.pdf"
-        }
-      ],
+      "links": [],
       "options": {
         "showHeader": true,
         "sortBy": [
           {
             "desc": true,
-            "displayName": "Messungen"
+            "displayName": "MaxTemp"
           }
         ]
       },
@@ -611,9 +481,9 @@
       {
         "allValue": null,
         "current": {
-          "selected": true,
-          "text": "01877 Bischofswerda",
-          "value": "01877 Bischofswerda"
+          "selected": false,
+          "text": "Eschborn",
+          "value": "Eschborn"
         },
         "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
         "definition": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").RAW_TSM_Cluster | distinct city | order by city",
@@ -639,16 +509,16 @@
         "auto_count": 30,
         "auto_min": "10s",
         "current": {
-          "selected": true,
-          "text": "200",
-          "value": "200"
+          "selected": false,
+          "text": "1000",
+          "value": "1000"
         },
         "hide": 0,
         "label": "Umkreis in km",
         "name": "umkreis",
         "options": [
           {
-            "selected": false,
+            "selected": true,
             "text": "1000",
             "value": "1000"
           },
@@ -668,7 +538,7 @@
             "value": "300"
           },
           {
-            "selected": true,
+            "selected": false,
             "text": "200",
             "value": "200"
           },
@@ -703,11 +573,45 @@
         "refresh": 2,
         "skipUrlSync": false,
         "type": "interval"
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "text": "Temperatur",
+          "value": "Temperatur"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Karte",
+        "multi": false,
+        "name": "karte",
+        "options": [
+          {
+            "selected": true,
+            "text": "Temperatur",
+            "value": "Temperatur"
+          },
+          {
+            "selected": false,
+            "text": "Wärmemenge",
+            "value": "Wärmemenge"
+          },
+          {
+            "selected": false,
+            "text": "Messungen",
+            "value": "Messungen"
+          }
+        ],
+        "query": "Temperatur, Wärmemenge, Messungen",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
       }
     ]
   },
   "time": {
-    "from": "now-30d",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {
@@ -724,5 +628,5 @@
   "timezone": "",
   "title": "TSM Gesamt",
   "uid": "F2esMgSGz",
-  "version": 9
+  "version": 23
 }
