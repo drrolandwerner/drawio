@@ -17,7 +17,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 2,
-  "iteration": 1597002111463,
+  "iteration": 1597173322787,
   "links": [],
   "panels": [
     {
@@ -320,7 +320,7 @@
       "targets": [
         {
           "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValues()\n| filter $__timeFilter(timestamp)\n| filter city in (PUB_TSM_ClusterByCityGeo(\"$stadt\",100*$umkreis))\n| summarize Messungen=count(), Liegenschaften=dcount(cluster) by timebin=bin(timestamp,1h)//$__interval)\n| order by timebin asc\n",
+          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValues()\n| filter $__timeFilter(timestamp)\n| filter city in (PUB_TSM_ClusterByCityGeo(\"$stadt\",1000*$umkreis))\n| summarize Messungen=count(), Liegenschaften=dcount(cluster) by timebin=bin(timestamp,1h)//$__interval)\n| order by timebin asc\n",
           "refId": "A",
           "resultFormat": "time_series"
         }
@@ -419,7 +419,7 @@
       "targets": [
         {
           "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_AllClusterAnalyticsSummary(\"$metrik\",unixtime_milliseconds_todatetime(${__from}),unixtime_milliseconds_todatetime(${__to}),\"$stadt\",\"$umkreis\")\n| summarize Ende=max(Ende)\n| extend Verzug = toint(datetime_diff('minute',now(),Ende))\n//| extend Start=format_datetime(Start,\"yyyy-MM-dd\")\n| extend Ende=format_datetime(Ende,\"yyyy-MM-dd\")\n| project Verzug",
+          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_AllClusterAnalyticsSummary(\"$metrik\",unixtime_milliseconds_todatetime(${__from}),unixtime_milliseconds_todatetime(${__to}),\"$stadt\",\"$umkreis\")\n| summarize Ende=max(Ende)\n| extend Verzug = toint(datetime_diff('minute',now(),Ende))\n| project Verzug",
           "refId": "A",
           "resultFormat": "table"
         }
@@ -429,6 +429,52 @@
       "title": "letzte Messung",
       "transparent": true,
       "type": "gauge"
+    },
+    {
+      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "center"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "semi-dark-green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "dateTimeAsIso"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 4,
+        "x": 20,
+        "y": 10
+      },
+      "id": 28,
+      "options": {
+        "showHeader": false
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "database": "dachsadxdb",
+          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").RAW_TSM_ReadingValues\n| summarize last_ts=max(timestamp)\n| extend Ende=format_datetime(datetime_add('hour',2,last_ts),\"yyyy-MM-dd HH:mm\")\n| project strcat(Ende,\" CET\")",
+          "refId": "B",
+          "resultFormat": "table"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "table"
     },
     {
       "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
@@ -457,7 +503,7 @@
         "h": 3,
         "w": 4,
         "x": 20,
-        "y": 10
+        "y": 12
       },
       "id": 13,
       "options": {
@@ -548,10 +594,6 @@
               {
                 "id": "custom.width",
                 "value": 100
-              },
-              {
-                "id": "displayName",
-                "value": "Messungen"
               }
             ]
           },
@@ -777,7 +819,7 @@
         "sortBy": [
           {
             "desc": true,
-            "displayName": "Prozent"
+            "displayName": "Zuletzt"
           }
         ]
       },
@@ -831,8 +873,8 @@
         "allValue": null,
         "current": {
           "selected": false,
-          "text": "65760 Eschborn",
-          "value": "65760 Eschborn"
+          "text": "61440 Oberursel",
+          "value": "61440 Oberursel"
         },
         "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
         "definition": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").RAW_TSM_Cluster | distinct city | order by city",
@@ -977,5 +1019,5 @@
   "timezone": "",
   "title": "TSM Gesamt",
   "uid": "F2esMgSGz",
-  "version": 43
+  "version": 52
 }
