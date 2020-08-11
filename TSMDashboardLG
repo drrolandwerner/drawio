@@ -18,7 +18,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 3,
-  "iteration": 1596833562664,
+  "iteration": 1597158427393,
   "links": [],
   "panels": [
     {
@@ -88,29 +88,32 @@
       "percentage": false,
       "pluginVersion": "7.1.1",
       "pointradius": 0.5,
-      "points": true,
+      "points": false,
       "renderer": "flot",
-      "seriesOverrides": [
-        {
-          "alias": "/WMZ.*/",
-          "color": "#C4162A",
-          "yaxis": 2
-        }
-      ],
+      "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
       "targets": [
         {
           "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3) in (\"TMP\",\"AGT\") and quantity==\"radiator_sensor_temperature\")\n    or (substring(logical,0,3) in (\"ATS\",\"ATF\") and quantity==\"external_temperature\")\n| summarize value=avg(value) by cluster, logical,device,quantity, position, direction, timestamp=bin(timestamp,$intervall)\n| project logical=strcat(logical,\" \", position, \" \", direction), value, timestamp\n| order by timestamp asc\n\n",
+          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValues()\n| filter $__timeFilter(timestamp)\n| filter cluster == replace(\"-\",\"/\",\"$lg\")\n| filter (substring(logical,0,3) in (\"TMP\",\"AGT\") and quantity==\"radiator_sensor_temperature\")\n    or (substring(logical,0,3) in (\"ATS\",\"ATF\") and quantity==\"external_temperature\")\n| summarize value=avg(value) by cluster, logical,device,quantity, position, direction, timestamp=bin(timestamp,$intervall)\n| project logical=strcat(logical,\" \", position, \" \", direction), value, timestamp\n| order by timestamp asc\n\n",
           "refId": "A",
           "resultFormat": "time_series"
         }
       ],
       "thresholds": [],
       "timeFrom": null,
-      "timeRegions": [],
+      "timeRegions": [
+        {
+          "colorMode": "background6",
+          "fill": true,
+          "fillColor": "rgba(234, 112, 112, 0.12)",
+          "line": false,
+          "lineColor": "rgba(237, 46, 24, 0.60)",
+          "op": "time"
+        }
+      ],
       "timeShift": null,
       "title": "Temperaturen",
       "tooltip": {
@@ -384,7 +387,7 @@
       "targets": [
         {
           "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3) in (\"WMZ\"))\n| summarize value=avg(value) by cluster, logical=strcat(logical,\" \", position, \" \", direction),device,quantity,timestamp=bin(timestamp,$intervall)\n| project logical, value, timestamp\n| order by timestamp asc\n\n\n",
+          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3) in (\"WMZ\") and quantity==\"heat_energy\")\n| summarize value=avg(value) by cluster, logical=strcat(logical,\" \", position, \" \", direction),device,quantity,timestamp=bin(timestamp,$intervall)\n| project logical, value, timestamp\n| order by timestamp asc\n\n\n",
           "refId": "A",
           "resultFormat": "time_series"
         }
@@ -502,7 +505,7 @@
       "targets": [
         {
           "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3)==\"WMZ\") \n| summarize value=max(value)-min(value) by cluster, logical=strcat(logical,\" \", position, \" \", direction),device,quantity,timestamp=bin(timestamp,$intervall)\n| project logical, value, timestamp\n| order by timestamp asc\n",
+          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3) in (\"WMZ\") and quantity==\"heat_energy\")\n| summarize value=max(value)-min(value) by cluster, logical=strcat(logical,\" \", position, \" \", direction),device,quantity,timestamp=bin(timestamp,$intervall)\n| project logical, value, timestamp\n| order by timestamp asc\n",
           "refId": "A",
           "resultFormat": "time_series"
         }
@@ -511,7 +514,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Wärmemengen pro Tag",
+      "title": "Wärmemengen pro Zeiteinheit",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -700,7 +703,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -770,7 +773,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -840,7 +843,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -910,7 +913,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -980,7 +983,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -1056,7 +1059,7 @@
             ],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -1123,7 +1126,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -1193,7 +1196,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -1263,7 +1266,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -1333,7 +1336,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -1403,7 +1406,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -1473,7 +1476,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -1535,7 +1538,7 @@
             "colors": [
               "#C4162A",
               "#3274D9",
-              "#3274D9"
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -1543,7 +1546,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -1613,7 +1616,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -1683,7 +1686,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -1753,7 +1756,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -1823,7 +1826,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -1893,7 +1896,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -1963,7 +1966,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -2033,7 +2036,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -2103,7 +2106,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -2173,7 +2176,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -2243,7 +2246,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -2313,7 +2316,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -2383,7 +2386,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -2453,7 +2456,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -2513,9 +2516,8 @@
             "aggregation": "current_notnull",
             "alias": "ATS01",
             "colors": [
-              "#8AB8FF",
-              "#3274D9",
-              "#C4162A"
+              "#1F60C4",
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -2523,7 +2525,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -2549,7 +2551,6 @@
             "shapeProp": "value",
             "shapeRegEx": false,
             "stringThresholds": [
-              "/.*/",
               "/.*/"
             ],
             "textData": [
@@ -2564,8 +2565,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              20,
-              25
+              20
             ],
             "tooltip": true,
             "tooltipColors": true,
@@ -2586,9 +2586,8 @@
             "aggregation": "current_notnull",
             "alias": "ATF01",
             "colors": [
-              "#8AB8FF",
               "#3274D9",
-              "#C4162A"
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -2596,7 +2595,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -2622,7 +2621,6 @@
             "shapeProp": "value",
             "shapeRegEx": false,
             "stringThresholds": [
-              "/.*/",
               "/.*/"
             ],
             "textData": [
@@ -2637,8 +2635,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              20,
-              25
+              20
             ],
             "tooltip": true,
             "tooltipColors": true,
@@ -2659,9 +2656,8 @@
             "aggregation": "current_notnull",
             "alias": "AGTS",
             "colors": [
-              "#8AB8FF",
               "#3274D9",
-              "#C4162A"
+              "#FA6400"
             ],
             "column": "Time",
             "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -2669,7 +2665,7 @@
             "eventData": [],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -2695,7 +2691,6 @@
             "shapeProp": "value",
             "shapeRegEx": false,
             "stringThresholds": [
-              "/.*/",
               "/.*/"
             ],
             "textData": [
@@ -2710,8 +2705,7 @@
             "textProp": "value",
             "textRegEx": true,
             "thresholds": [
-              20,
-              25
+              50
             ],
             "tooltip": true,
             "tooltipColors": true,
@@ -2748,7 +2742,7 @@
             ],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -2821,7 +2815,7 @@
             ],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -2894,7 +2888,7 @@
             ],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -2967,7 +2961,7 @@
             ],
             "eventProp": "value",
             "eventRegEx": false,
-            "gradient": false,
+            "gradient": true,
             "hidden": false,
             "invert": false,
             "linkData": [],
@@ -3032,7 +3026,2409 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Strangschema",
+      "title": "Strangschema (gezeichnet)",
+      "type": "agenty-flowcharting-panel",
+      "valueName": "current",
+      "version": "0.9.0"
+    },
+    {
+      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": null
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "flowchartsData": {
+        "flowcharts": [
+          {
+            "allowDrawio": true,
+            "bgColor": "rgb(0, 0, 0)",
+            "center": true,
+            "csv": "CSV",
+            "download": true,
+            "editorTheme": "dark",
+            "editorUrl": "https://www.draw.io",
+            "enableAnim": false,
+            "grid": false,
+            "lock": true,
+            "name": "Main",
+            "scale": true,
+            "tooltip": true,
+            "type": "csv",
+            "url": "https://raw.githubusercontent.com/drrolandwerner/drawio/master/TSM-$lg.csv",
+            "xml": "xml",
+            "zoom": "100%"
+          }
+        ]
+      },
+      "format": "short",
+      "graphId": "flowchart_25",
+      "gridPos": {
+        "h": 14,
+        "w": 24,
+        "x": 0,
+        "y": 41
+      },
+      "id": 25,
+      "newFlag": false,
+      "pluginVersion": "7.1.1",
+      "rulesData": {
+        "rulesData": [
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP01",
+            "colors": [
+              "#C4162A",
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 1,
+            "overlayIcon": false,
+            "pattern": "TMP01",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP01",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP01",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              5,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP02",
+            "colors": [
+              "#C4162A",
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 2,
+            "overlayIcon": false,
+            "pattern": "TMP02",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP02",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP02",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              5,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP03",
+            "colors": [
+              "#C4162A",
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 3,
+            "overlayIcon": false,
+            "pattern": "TMP03",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP03",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP03",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              5,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP04",
+            "colors": [
+              "#C4162A",
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 4,
+            "overlayIcon": false,
+            "pattern": "TMP04",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP04",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP04",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              5,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP05",
+            "colors": [
+              "#C4162A",
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 5,
+            "overlayIcon": false,
+            "pattern": "TMP05",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP05",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP05",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              5,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "max",
+            "alias": "WMZ02",
+            "colors": [
+              "rgb(51, 48, 46)"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 0,
+            "eventData": [
+              {
+                "eventOn": -1,
+                "hidden": false,
+                "pattern": "WMZ02",
+                "style": "width",
+                "value": "60"
+              }
+            ],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 6,
+            "overlayIcon": false,
+            "pattern": "WMZ02",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "WMZ02",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": false,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "WMZ02",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [],
+            "tooltip": true,
+            "tooltipColors": false,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "kwatth",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP06",
+            "colors": [
+              "#C4162A",
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 7,
+            "overlayIcon": false,
+            "pattern": "TMP06",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP06",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP06",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              5,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP07",
+            "colors": [
+              "#C4162A",
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 8,
+            "overlayIcon": false,
+            "pattern": "TMP07",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP07",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP07",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              5,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP08",
+            "colors": [
+              "#C4162A",
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 9,
+            "overlayIcon": false,
+            "pattern": "TMP08",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP08",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP08",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              5,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP09",
+            "colors": [
+              "#C4162A",
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 10,
+            "overlayIcon": false,
+            "pattern": "TMP09",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP09",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP09",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              5,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP10",
+            "colors": [
+              "#C4162A",
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 11,
+            "overlayIcon": false,
+            "pattern": "TMP10",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP10",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP10",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              5,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP11",
+            "colors": [
+              "#C4162A",
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 12,
+            "overlayIcon": false,
+            "pattern": "TMP11",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP11",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP11",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              5,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP12",
+            "colors": [
+              "#C4162A",
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 13,
+            "overlayIcon": false,
+            "pattern": "TMP12",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP12",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP12",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              5,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP13",
+            "colors": [
+              "#C4162A",
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 14,
+            "overlayIcon": false,
+            "pattern": "TMP13",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP13",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP13",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              5,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP14",
+            "colors": [
+              "#C4162A",
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 15,
+            "overlayIcon": false,
+            "pattern": "TMP14",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP14",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP14",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              5,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP15",
+            "colors": [
+              "#C4162A",
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 16,
+            "overlayIcon": false,
+            "pattern": "TMP15",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP15",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP15",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              5,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP16",
+            "colors": [
+              "#C4162A",
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 17,
+            "overlayIcon": false,
+            "pattern": "TMP16",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP16",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP16",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              5,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP17",
+            "colors": [
+              "#C4162A",
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 18,
+            "overlayIcon": false,
+            "pattern": "TMP17",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP17",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP17",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              5,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP18",
+            "colors": [
+              "#C4162A",
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 19,
+            "overlayIcon": false,
+            "pattern": "TMP18",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP18",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP18",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              5,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP19",
+            "colors": [
+              "#C4162A",
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 20,
+            "overlayIcon": false,
+            "pattern": "TMP19",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP19",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP19",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              5,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP20",
+            "colors": [
+              "#C4162A",
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 21,
+            "overlayIcon": false,
+            "pattern": "TMP20",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP20",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP20",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              5,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP21",
+            "colors": [
+              "#C4162A",
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 22,
+            "overlayIcon": false,
+            "pattern": "TMP21",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP21",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP21",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              5,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP22",
+            "colors": [
+              "#C4162A",
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 23,
+            "overlayIcon": false,
+            "pattern": "TMP22",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP22",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP22",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              5,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP23",
+            "colors": [
+              "#C4162A",
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 24,
+            "overlayIcon": false,
+            "pattern": "TMP23",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP23",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP23",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              5,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP24",
+            "colors": [
+              "#C4162A",
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 25,
+            "overlayIcon": false,
+            "pattern": "TMP24",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP24",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP24",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              5,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "TMP25",
+            "colors": [
+              "#C4162A",
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 26,
+            "overlayIcon": false,
+            "pattern": "TMP25",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "TMP25",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": true,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "TMP25",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              5,
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "ATS01",
+            "colors": [
+              "#1F60C4",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 27,
+            "overlayIcon": false,
+            "pattern": "ATS01",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "n",
+                "hidden": false,
+                "pattern": "ATS01",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": false,
+            "stringThresholds": [
+              "/.*/"
+            ],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "ATS01",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              20
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "ATF01",
+            "colors": [
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 28,
+            "overlayIcon": false,
+            "pattern": "ATF01",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "n",
+                "hidden": false,
+                "pattern": "ATF01",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": false,
+            "stringThresholds": [
+              "/.*/"
+            ],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "ATF01",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              20
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "current_notnull",
+            "alias": "AGTS",
+            "colors": [
+              "#3274D9",
+              "#FA6400"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 1,
+            "eventData": [],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 29,
+            "overlayIcon": false,
+            "pattern": "AGTS",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "n",
+                "hidden": false,
+                "pattern": "AGTS",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": false,
+            "stringThresholds": [
+              "/.*/"
+            ],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "AGTS",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [
+              50
+            ],
+            "tooltip": true,
+            "tooltipColors": true,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "celsius",
+            "valueData": []
+          },
+          {
+            "aggregation": "max",
+            "alias": "WMZ01",
+            "colors": [
+              "rgb(51, 48, 46)"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 0,
+            "eventData": [
+              {
+                "eventOn": -1,
+                "hidden": false,
+                "pattern": "WMZ01",
+                "style": "width",
+                "value": "60"
+              }
+            ],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 30,
+            "overlayIcon": false,
+            "pattern": "WMZ01",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "WMZ01",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": false,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "WMZ01",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [],
+            "tooltip": true,
+            "tooltipColors": false,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "kwatth",
+            "valueData": []
+          },
+          {
+            "aggregation": "max",
+            "alias": "WMZ03",
+            "colors": [
+              "rgb(51, 48, 46)"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 0,
+            "eventData": [
+              {
+                "eventOn": -1,
+                "hidden": false,
+                "pattern": "WMZ02",
+                "style": "width",
+                "value": "60"
+              }
+            ],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 31,
+            "overlayIcon": false,
+            "pattern": "WMZ03",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "WMZ03",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": false,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "WMZ03",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [],
+            "tooltip": true,
+            "tooltipColors": false,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "kwatth",
+            "valueData": []
+          },
+          {
+            "aggregation": "max",
+            "alias": "WMZ04",
+            "colors": [
+              "rgb(51, 48, 46)"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 0,
+            "eventData": [
+              {
+                "eventOn": -1,
+                "hidden": false,
+                "pattern": "WMZ02",
+                "style": "width",
+                "value": "60"
+              }
+            ],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 32,
+            "overlayIcon": false,
+            "pattern": "WMZ04",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "WMZ04",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": false,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "WMZ04",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [],
+            "tooltip": true,
+            "tooltipColors": false,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "kwatth",
+            "valueData": []
+          },
+          {
+            "aggregation": "max",
+            "alias": "WMZ05",
+            "colors": [
+              "rgb(51, 48, 46)"
+            ],
+            "column": "Time",
+            "dateFormat": "YYYY-MM-DD HH:mm:ss",
+            "decimals": 0,
+            "eventData": [
+              {
+                "eventOn": -1,
+                "hidden": false,
+                "pattern": "WMZ02",
+                "style": "width",
+                "value": "60"
+              }
+            ],
+            "eventProp": "value",
+            "eventRegEx": false,
+            "gradient": true,
+            "hidden": false,
+            "invert": false,
+            "linkData": [],
+            "linkProp": "value",
+            "linkRegEx": true,
+            "mappingType": 1,
+            "metricType": "serie",
+            "order": 33,
+            "overlayIcon": false,
+            "pattern": "WMZ05",
+            "rangeData": [],
+            "reduce": true,
+            "refId": "A",
+            "sanitize": false,
+            "shapeData": [
+              {
+                "colorOn": "a",
+                "hidden": false,
+                "pattern": "WMZ05",
+                "style": "fillColor"
+              }
+            ],
+            "shapeProp": "value",
+            "shapeRegEx": false,
+            "stringThresholds": [],
+            "textData": [
+              {
+                "hidden": false,
+                "pattern": "WMZ05",
+                "textOn": "wmd",
+                "textPattern": "/.*/",
+                "textReplace": "anl"
+              }
+            ],
+            "textProp": "value",
+            "textRegEx": true,
+            "thresholds": [],
+            "tooltip": true,
+            "tooltipColors": false,
+            "tooltipLabel": "",
+            "tooltipOn": "a",
+            "tpDirection": "h",
+            "tpGraph": true,
+            "tpGraphHigh": null,
+            "tpGraphLow": null,
+            "tpGraphScale": "linear",
+            "tpGraphSize": "200px",
+            "tpGraphType": "line",
+            "type": "number",
+            "unit": "kwatth",
+            "valueData": []
+          }
+        ]
+      },
+      "targets": [
+        {
+          "database": "dachsadxdb",
+          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValuesByCluster(replace(\"-\",\"/\",\"$lg\"))\n| filter $__timeFilter(timestamp)\n| filter (substring(logical,0,3) in (\"TMP\",\"AGT\") and quantity==\"radiator_sensor_temperature\")\n    or (substring(logical,0,3) in (\"ATS\",\"ATF\") and quantity==\"external_temperature\")\n    or (substring(logical,0,3)==\"WMZ\") \n| summarize value=avg(value) by cluster, logical,device,quantity,timestamp=bin(timestamp,$intervall)\n| project logical, value, timestamp\n| order by timestamp asc\n",
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Strangschema (generiert)",
       "type": "agenty-flowcharting-panel",
       "valueName": "current",
       "version": "0.9.0"
@@ -3136,7 +5532,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 41
+        "y": 55
       },
       "highlightCards": true,
       "id": 12,
@@ -3210,25 +5606,30 @@
         "auto_min": "10s",
         "current": {
           "selected": true,
-          "text": "1d",
-          "value": "1d"
+          "text": "1h",
+          "value": "1h"
         },
         "hide": 0,
         "label": "Auflösung",
         "name": "intervall",
         "options": [
           {
-            "selected": true,
+            "selected": false,
             "text": "1d",
             "value": "1d"
           },
           {
-            "selected": false,
+            "selected": true,
             "text": "1h",
             "value": "1h"
+          },
+          {
+            "selected": false,
+            "text": "10m",
+            "value": "10m"
           }
         ],
-        "query": "1d,1h",
+        "query": "1d,1h,10m",
         "queryValue": "",
         "refresh": 2,
         "skipUrlSync": false,
@@ -3237,8 +5638,8 @@
     ]
   },
   "time": {
-    "from": "2020-05-09T00:00:00.000Z",
-    "to": "2020-08-01T00:00:00.000Z"
+    "from": "now-7d",
+    "to": "now"
   },
   "timepicker": {
     "hidden": false,
@@ -3253,5 +5654,5 @@
   "timezone": "utc",
   "title": "TSM Liegenschaft",
   "uid": "0RkTMgIMz",
-  "version": 44
+  "version": 60
 }
