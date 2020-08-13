@@ -18,7 +18,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 3,
-  "iteration": 1597176563123,
+  "iteration": 1597327201119,
   "links": [],
   "panels": [
     {
@@ -3506,5 +3506,5 @@
   "timezone": "utc",
   "title": "TSM Liegenschaft",
   "uid": "0RkTMgIMz",
-  "version": 67
+  "version": 68
 }
