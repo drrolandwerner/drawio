@@ -17,7 +17,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 2,
-  "iteration": 1597173322787,
+  "iteration": 1597328042080,
   "links": [],
   "panels": [
     {
@@ -818,8 +818,8 @@
         "showHeader": true,
         "sortBy": [
           {
-            "desc": true,
-            "displayName": "Zuletzt"
+            "desc": false,
+            "displayName": "Prozent"
           }
         ]
       },
@@ -873,8 +873,8 @@
         "allValue": null,
         "current": {
           "selected": false,
-          "text": "61440 Oberursel",
-          "value": "61440 Oberursel"
+          "text": "65760 Eschborn",
+          "value": "65760 Eschborn"
         },
         "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
         "definition": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").RAW_TSM_Cluster | distinct city | order by city",
