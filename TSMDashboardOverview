@@ -17,20 +17,36 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 2,
-  "iteration": 1597328042080,
+  "iteration": 1597609350078,
   "links": [],
   "panels": [
     {
-      "circleMaxSize": "8",
-      "circleMinSize": "2",
+      "autoPanLabels": true,
+      "autoWidthLabels": true,
+      "circleMaxSize": "5",
+      "circleMinSize": 2,
+      "circleOptions": {
+        "strokeEnabled": true,
+        "strokeWeight": 3
+      },
+      "clickthroughOptions": {
+        "windowName": null
+      },
+      "clickthroughUrl": "",
       "colors": [
-        "rgb(46, 47, 48)",
-        "#1F60C4",
-        "#37872D",
-        "#C4162A"
+        "rgba(245, 54, 54, 0.9)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(50, 172, 45, 0.97)"
       ],
+      "customAttribution": false,
+      "customAttributionText": null,
       "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
       "decimals": 0,
+      "doubleClickZoom": true,
+      "dragging": true,
+      "esGeoPoint": null,
+      "esLink": null,
+      "esLocationName": "",
       "esMetric": "Count",
       "fieldConfig": {
         "defaults": {
@@ -61,23 +77,35 @@
         "y": 0
       },
       "hideEmpty": false,
+      "hideTimepickerNavigation": false,
       "hideZero": false,
       "id": 22,
-      "initialZoom": "5",
+      "ignoreEmptyGeohashValues": false,
+      "ignoreEscapeKey": false,
+      "ignoreInvalidGeohashValues": false,
+      "initialZoom": 1,
+      "legendContainerSelector": null,
       "links": [],
       "locationData": "table",
-      "mapCenter": "custom",
-      "mapCenterLatitude": "50.143",
-      "mapCenterLongitude": "8.571",
+      "mapCenter": "(0°, 0°)",
+      "mapCenterLatitude": 0,
+      "mapCenterLongitude": 0,
+      "mapFitData": true,
+      "mapZoomByRadius": null,
       "maxDataPoints": 1,
+      "maximumZoom": null,
       "mouseWheelZoom": true,
       "pluginVersion": "7.1.1",
-      "showLegend": false,
+      "showAttribution": true,
+      "showLegend": true,
+      "showZoomControl": true,
       "stickyLabels": false,
       "tableQueryOptions": {
         "geohashField": "geohash",
         "labelField": "Adresse",
+        "labelLocationKeyField": null,
         "latitudeField": "latitude",
+        "linkField": "",
         "longitudeField": "longitude",
         "metricField": "value",
         "queryType": "coordinates"
@@ -90,148 +118,14 @@
           "resultFormat": "table"
         }
       ],
-      "thresholds": "1,85, 115",
+      "thresholds": "80,100",
       "timeFrom": null,
       "timeShift": null,
       "title": "$metrik in % von Durchschnitt",
-      "type": "grafana-worldmap-panel",
+      "type": "grafana-map-panel",
       "unitPlural": "",
-      "unitSingle": "",
       "unitSingular": "",
-      "valueName": "avg"
-    },
-    {
-      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {},
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "rgb(35, 41, 38)",
-                "value": null
-              },
-              {
-                "color": "semi-dark-green",
-                "value": 1
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName"
-            },
-            "properties": []
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 3,
-        "x": 10,
-        "y": 0
-      },
-      "id": 11,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "7.1.1",
-      "targets": [
-        {
-          "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ClusterByTimespan(unixtime_milliseconds_todatetime($__from), unixtime_milliseconds_todatetime($__to))\n| filter city in (cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ClusterByCityGeo(\"$stadt\",$umkreis*1000))\n| count",
-          "refId": "A",
-          "resultFormat": "table"
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Liegenschaften",
-      "transparent": true,
-      "type": "stat"
-    },
-    {
-      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": null
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "rgb(35, 41, 38)",
-                "value": null
-              },
-              {
-                "color": "semi-dark-green",
-                "value": 1
-              }
-            ]
-          },
-          "unit": "none"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName"
-            },
-            "properties": []
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 3,
-        "x": 13,
-        "y": 0
-      },
-      "id": 27,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "/.*/",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "7.1.1",
-      "targets": [
-        {
-          "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ClusterByTimespan(unixtime_milliseconds_todatetime($__from), unixtime_milliseconds_todatetime($__to))\n| filter city in (cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ClusterByCityGeo(\"$stadt\",$umkreis*1000))\n| summarize sum(devices)",
-          "refId": "A",
-          "resultFormat": "table"
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Devices",
-      "transparent": true,
-      "type": "stat"
+      "valueName": "total"
     },
     {
       "datasource": null,
@@ -262,175 +156,6 @@
       "type": "text"
     },
     {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Messpunkte"
-            },
-            "properties": []
-          }
-        ]
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 14,
-        "w": 9,
-        "x": 10,
-        "y": 3
-      },
-      "hiddenSeries": false,
-      "id": 24,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": false,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "percentage": false,
-      "pluginVersion": "7.1.1",
-      "pointradius": 2,
-      "points": true,
-      "renderer": "flot",
-      "seriesOverrides": [
-        {
-          "alias": "Liegenschaften",
-          "yaxis": 2
-        }
-      ],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": true,
-      "targets": [
-        {
-          "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ReadingValues()\n| filter $__timeFilter(timestamp)\n| filter city in (PUB_TSM_ClusterByCityGeo(\"$stadt\",1000*$umkreis))\n| summarize Messungen=count(), Liegenschaften=dcount(cluster) by timebin=bin(timestamp,1h)//$__interval)\n| order by timebin asc\n",
-          "refId": "A",
-          "resultFormat": "time_series"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Messungen pro Stunde",
-      "tooltip": {
-        "shared": true,
-        "sort": 2,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "label": "Messungen",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": "Liegenschaften",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {},
-          "decimals": 0,
-          "mappings": [],
-          "max": 120,
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "semi-dark-green",
-                "value": null
-              },
-              {
-                "color": "#EAB839",
-                "value": 30
-              },
-              {
-                "color": "dark-red",
-                "value": 90
-              }
-            ]
-          },
-          "unit": "m"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 4,
-        "x": 20,
-        "y": 3
-      },
-      "id": 26,
-      "options": {
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "/.*/",
-          "values": true
-        },
-        "showThresholdLabels": true,
-        "showThresholdMarkers": true
-      },
-      "pluginVersion": "7.1.1",
-      "targets": [
-        {
-          "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_AllClusterAnalyticsSummary(\"$metrik\",unixtime_milliseconds_todatetime(${__from}),unixtime_milliseconds_todatetime(${__to}),\"$stadt\",\"$umkreis\")\n| summarize Ende=max(Ende)\n| extend Verzug = toint(datetime_diff('minute',now(),Ende))\n| project Verzug",
-          "refId": "A",
-          "resultFormat": "table"
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "letzte Messung",
-      "transparent": true,
-      "type": "gauge"
-    },
-    {
       "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
       "fieldConfig": {
         "defaults": {
@@ -455,13 +180,13 @@
         "h": 2,
         "w": 4,
         "x": 20,
-        "y": 10
+        "y": 3
       },
       "id": 28,
       "options": {
         "showHeader": false
       },
-      "pluginVersion": "7.1.1",
+      "pluginVersion": "7.1.3",
       "targets": [
         {
           "database": "dachsadxdb",
@@ -486,26 +211,32 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "rgb(60, 63, 66)",
+                "color": "rgb(35, 41, 38)",
                 "value": null
               },
               {
                 "color": "semi-dark-green",
-                "value": 100
+                "value": 1
               }
             ]
-          },
-          "unit": "short"
+          }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName"
+            },
+            "properties": []
+          }
+        ]
       },
       "gridPos": {
         "h": 3,
-        "w": 4,
-        "x": 20,
-        "y": 12
+        "w": 3,
+        "x": 21,
+        "y": 5
       },
-      "id": 13,
+      "id": 11,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
@@ -520,18 +251,18 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "7.1.1",
+      "pluginVersion": "7.1.3",
       "targets": [
         {
           "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_ClusterByTimespan(unixtime_milliseconds_todatetime($__from), unixtime_milliseconds_todatetime($__to))\n| filter city in (PUB_TSM_ClusterByCityGeo(\"$stadt\",$umkreis*1000))\n| summarize sum(anzahl)",
+          "query": "PUB_TSM_ClusterByTimespan(unixtime_milliseconds_todatetime($__from), unixtime_milliseconds_todatetime($__to)) | filter city in (PUB_TSM_ClusterByCityGeo(\"$stadt\",$umkreis*1000)) | count",
           "refId": "A",
           "resultFormat": "table"
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Messungen",
+      "title": "Liegenschaften",
       "transparent": true,
       "type": "stat"
     },
@@ -575,7 +306,7 @@
                   {
                     "targetBlank": true,
                     "title": "Zeige Liegenschaft",
-                    "url": "https://rlas-dckhst-03.az.eu.techem.corp:8081/d/0RkTMgIMz/tsm-liegenschaft?orgId=1&from=now-7d&to=now&var-intervall=1h&var-lg=${__data.fields[ID]}"
+                    "url": "http://rlas-dckhst-03.az.eu.techem.corp:8081/d/0RkTMgIMz/tsm-liegenschaft?orgId=1&from=now-7d&to=now&var-intervall=1h&var-lg=${__data.fields[ID]}"
                   }
                 ]
               }
@@ -819,11 +550,11 @@
         "sortBy": [
           {
             "desc": false,
-            "displayName": "Prozent"
+            "displayName": "Adresse"
           }
         ]
       },
-      "pluginVersion": "7.1.1",
+      "pluginVersion": "7.1.3",
       "targets": [
         {
           "database": "dachsadxdb",
@@ -873,8 +604,8 @@
         "allValue": null,
         "current": {
           "selected": false,
-          "text": "65760 Eschborn",
-          "value": "65760 Eschborn"
+          "text": "Eschborn",
+          "value": "Eschborn"
         },
         "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
         "definition": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").RAW_TSM_Cluster | distinct city | order by city",
@@ -900,12 +631,12 @@
         "auto_count": 30,
         "auto_min": "10s",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "1000",
           "value": "1000"
         },
         "hide": 0,
-        "label": "Umkreis in km",
+        "label": "Umkreis",
         "name": "umkreis",
         "options": [
           {
@@ -995,7 +726,6 @@
           }
         ],
         "query": "Temperatur, Wärmemenge, Messungen",
-        "queryValue": "",
         "skipUrlSync": false,
         "type": "custom"
       }
@@ -1019,5 +749,5 @@
   "timezone": "",
   "title": "TSM Gesamt",
   "uid": "F2esMgSGz",
-  "version": 52
+  "version": 12
 }
