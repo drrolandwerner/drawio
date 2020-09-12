@@ -16,14 +16,133 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 2,
-  "iteration": 1597609350078,
+  "id": 5,
+  "iteration": 1599927172427,
   "links": [],
   "panels": [
     {
+      "datasource": "Azure Data Explorer Datasource dachsadxcluster PROD",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(35, 41, 38)",
+                "value": null
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName"
+            },
+            "properties": []
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 0,
+        "y": 0
+      },
+      "id": 11,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "database": "dachsadxdb",
+          "query": "cluster(\"dachsadxclustereuw.westeurope\").database(\"public\").PUB_TSM_FN_ClusterByTimespan(unixtime_milliseconds_todatetime($__from), unixtime_milliseconds_todatetime($__to)) | filter city in (cluster(\"dachsadxclustereuw.westeurope\").database(\"public\").PUB_TSM_FN_ClusterByCityGeo(\"$stadt\",toint($umkreis*1000))) | count\n\n\n",
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Liegenschaften",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 16,
+        "y": 0
+      },
+      "id": 24,
+      "options": {
+        "content": "[Hildesheim](https://rlas-dckhst-03.az.eu.techem.corp:8081/d/0RkTMgIMx/tsm-liegenschaft-status-neu?var-lg=0004-04604) [Oberursel](https://rlas-dckhst-03.az.eu.techem.corp:8081/d/0RkTMgIMx/tsm-liegenschaft-status-neu?var-lg=0120-04929) [Wildau](https://rlas-dckhst-03.az.eu.techem.corp:8081/d/0RkTMgIMx/tsm-liegenschaft-status-neu?var-lg=0135-09020)\n",
+        "mode": "markdown"
+      },
+      "pluginVersion": "7.1.0",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Referenzanlagen",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": null,
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 19,
+        "y": 0
+      },
+      "id": 19,
+      "links": [],
+      "options": {
+        "content": "<img src=\"https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTjB-VTmWebcfNJjEW0xm7nTUzVDWAd-LnQCw&usqp=CAU\" alt=\"techem.de\">",
+        "mode": "html"
+      },
+      "pluginVersion": "7.1.0",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    },
+    {
       "autoPanLabels": true,
       "autoWidthLabels": true,
-      "circleMaxSize": "5",
+      "circleMaxSize": "10",
       "circleMinSize": 2,
       "circleOptions": {
         "strokeEnabled": true,
@@ -40,7 +159,7 @@
       ],
       "customAttribution": false,
       "customAttributionText": null,
-      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
+      "datasource": "Azure Data Explorer Datasource dachsadxcluster PROD",
       "decimals": 0,
       "doubleClickZoom": true,
       "dragging": true,
@@ -71,10 +190,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 17,
-        "w": 10,
+        "h": 20,
+        "w": 11,
         "x": 0,
-        "y": 0
+        "y": 3
       },
       "hideEmpty": false,
       "hideTimepickerNavigation": false,
@@ -102,10 +221,10 @@
       "stickyLabels": false,
       "tableQueryOptions": {
         "geohashField": "geohash",
-        "labelField": "Adresse",
+        "labelField": "label",
         "labelLocationKeyField": null,
         "latitudeField": "latitude",
-        "linkField": "",
+        "linkField": "link",
         "longitudeField": "longitude",
         "metricField": "value",
         "queryType": "coordinates"
@@ -113,7 +232,7 @@
       "targets": [
         {
           "database": "dachsadxdb",
-          "query": "let gcd = cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").RAW_TSM_ClusterGeocode;\ncluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_AllClusterAnalyticsSummary(\"$metrik\",unixtime_milliseconds_todatetime(${__from}),unixtime_milliseconds_todatetime(${__to}),\"$stadt\",\"$umkreis\")\n| extend Verzug = datetime_diff('hour',now(),Ende)\n| extend Start=format_datetime(Start,\"yyyy-MM-dd\")\n| extend Ende=format_datetime(Ende,\"yyyy-MM-dd\")\n| extend lg=replace(\"-\",\"/\",ID)\n| join gcd on $left.lg == $right.Alias\n| project Adresse=strcat(Stadt,\", \",Strasse, \" / \", Ende,\" / Letzter Wert \", Zuletzt,\" / Abweichung von Durchschnitt in %\"),ID, value=Prozent, longitude=Longitude, latitude=Latitude\n\n",
+          "query": "let gcd = cluster(\"dachsadxclustereuw.westeurope\").database(\"public\").PUB_TSM_FN_ClusterGeocode;\ncluster(\"dachsadxclustereuw.westeurope\").database(\"public\").PUB_TSM_FN_AllClusterAnalyticsSummary(\"$metrik\",unixtime_milliseconds_todatetime(${__from}),unixtime_milliseconds_todatetime(${__to}),\"$stadt\",toint($umkreis))\n| extend Verzug = datetime_diff('hour',now(),Ende)\n| extend Start=format_datetime(Start,\"yyyy-MM-dd\")\n| extend Ende=format_datetime(Ende,\"yyyy-MM-dd\")\n| extend lg=replace(\"-\",\"/\",ID)\n| join gcd on $left.lg == $right.Alias\n| project label=strcat(Stadt,\", \",Strasse, \" / \", Ende,\" / Letzter Wert \", Zuletzt,\" / Abweichung von Durchschnitt in %\"),ID, value=Prozent, longitude=Longitude, latitude=Latitude, link=strcat(\"https://rlas-dckhst-03.az.eu.techem.corp:8081/d/0RkTMgIMx/tsm-liegenschaft-status-neu?var-lg=\",ID)\n\n",
           "refId": "A",
           "resultFormat": "table"
         }
@@ -128,146 +247,7 @@
       "valueName": "total"
     },
     {
-      "datasource": null,
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 4,
-        "x": 20,
-        "y": 0
-      },
-      "id": 19,
-      "links": [],
-      "options": {
-        "content": "<img src=\"https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTjB-VTmWebcfNJjEW0xm7nTUzVDWAd-LnQCw&usqp=CAU\" alt=\"techem.de\">",
-        "mode": "html"
-      },
-      "pluginVersion": "7.1.0",
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "",
-      "transparent": true,
-      "type": "text"
-    },
-    {
-      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": "center"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "semi-dark-green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "dateTimeAsIso"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 2,
-        "w": 4,
-        "x": 20,
-        "y": 3
-      },
-      "id": 28,
-      "options": {
-        "showHeader": false
-      },
-      "pluginVersion": "7.1.3",
-      "targets": [
-        {
-          "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").RAW_TSM_ReadingValues\n| summarize last_ts=max(timestamp)\n| extend Ende=format_datetime(datetime_add('hour',2,last_ts),\"yyyy-MM-dd HH:mm\")\n| project strcat(Ende,\" CET\")",
-          "refId": "B",
-          "resultFormat": "table"
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "",
-      "transparent": true,
-      "type": "table"
-    },
-    {
-      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {},
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "rgb(35, 41, 38)",
-                "value": null
-              },
-              {
-                "color": "semi-dark-green",
-                "value": 1
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName"
-            },
-            "properties": []
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 3,
-        "x": 21,
-        "y": 5
-      },
-      "id": 11,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "7.1.3",
-      "targets": [
-        {
-          "database": "dachsadxdb",
-          "query": "PUB_TSM_ClusterByTimespan(unixtime_milliseconds_todatetime($__from), unixtime_milliseconds_todatetime($__to)) | filter city in (PUB_TSM_ClusterByCityGeo(\"$stadt\",$umkreis*1000)) | count",
-          "refId": "A",
-          "resultFormat": "table"
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Liegenschaften",
-      "transparent": true,
-      "type": "stat"
-    },
-    {
-      "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
+      "datasource": "Azure Data Explorer Datasource dachsadxcluster PROD",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -304,9 +284,9 @@
                 "id": "links",
                 "value": [
                   {
-                    "targetBlank": true,
+                    "targetBlank": false,
                     "title": "Zeige Liegenschaft",
-                    "url": "http://rlas-dckhst-03.az.eu.techem.corp:8081/d/0RkTMgIMz/tsm-liegenschaft?orgId=1&from=now-7d&to=now&var-intervall=1h&var-lg=${__data.fields[ID]}"
+                    "url": "https://rlas-dckhst-03.az.eu.techem.corp:8081/d/0RkTMgIMx/tsm-liegenschaft-status-neu?var-lg=${__data.fields[ID]}"
                   }
                 ]
               }
@@ -537,10 +517,10 @@
         ]
       },
       "gridPos": {
-        "h": 13,
-        "w": 24,
-        "x": 0,
-        "y": 17
+        "h": 20,
+        "w": 11,
+        "x": 12,
+        "y": 3
       },
       "id": 9,
       "links": [],
@@ -554,11 +534,11 @@
           }
         ]
       },
-      "pluginVersion": "7.1.3",
+      "pluginVersion": "7.1.1",
       "targets": [
         {
           "database": "dachsadxdb",
-          "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").PUB_TSM_AllClusterAnalyticsSummary(\"$metrik\",unixtime_milliseconds_todatetime(${__from}),unixtime_milliseconds_todatetime(${__to}),\"$stadt\",\"$umkreis\")\n| extend Verzug = datetime_diff('hour',now(),Ende)\n| extend Start=format_datetime(Start,\"yyyy-MM-dd\")\n| extend Ende=format_datetime(Ende,\"yyyy-MM-dd\")\n\n\n //Start2=format_datetime(Start, 'y-M-d h:m:s.fffffff')",
+          "query": "cluster(\"dachsadxclustereuw.westeurope\").database(\"public\").PUB_TSM_FN_AllClusterAnalyticsSummary(\"$metrik\",unixtime_milliseconds_todatetime(${__from}),unixtime_milliseconds_todatetime(${__to}),\"$stadt\",toint($umkreis))\n| extend Verzug = datetime_diff('hour',now(),Ende)\n| extend Start=format_datetime(Start,\"yyyy-MM-dd\")\n| extend Ende=format_datetime(Ende,\"yyyy-MM-dd\")\n",
           "refId": "D",
           "resultFormat": "table"
         }
@@ -574,14 +554,10 @@
               "names": [
                 "Adresse",
                 "ID",
-                "Beginn",
-                "Durchschnitt",
                 "Zuletzt",
                 "Differenz",
                 "Prozent",
                 "Einheit",
-                "Start",
-                "Ende",
                 "Verzug"
               ]
             }
@@ -607,15 +583,15 @@
           "text": "Eschborn",
           "value": "Eschborn"
         },
-        "datasource": "Azure Data Explorer Datasource dachsadxcluster Spielwiese",
-        "definition": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").RAW_TSM_Cluster | distinct city | order by city",
+        "datasource": "Azure Data Explorer Datasource dachsadxcluster PROD",
+        "definition": "cluster(\"dachsadxclustereuw.westeurope\").database(\"public\").PUB_TSM_FN_Cluster | distinct city | order by city",
         "hide": 0,
         "includeAll": false,
         "label": "Stadt",
         "multi": false,
         "name": "stadt",
         "options": [],
-        "query": "cluster(\"dachsadxcluster.germanywestcentral\").database(\"dachsadxdb\").RAW_TSM_Cluster | distinct city | order by city",
+        "query": "cluster(\"dachsadxclustereuw.westeurope\").database(\"public\").PUB_TSM_FN_Cluster | distinct city | order by city",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -716,23 +692,19 @@
           },
           {
             "selected": false,
-            "text": "Wärmemenge",
-            "value": "Wärmemenge"
-          },
-          {
-            "selected": false,
             "text": "Messungen",
             "value": "Messungen"
           }
         ],
-        "query": "Temperatur, Wärmemenge, Messungen",
+        "query": "Temperatur, Messungen",
+        "queryValue": "",
         "skipUrlSync": false,
         "type": "custom"
       }
     ]
   },
   "time": {
-    "from": "now-7d",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {
@@ -747,7 +719,7 @@
     ]
   },
   "timezone": "",
-  "title": "TSM Gesamt",
-  "uid": "F2esMgSGz",
-  "version": 12
+  "title": "TSM Gesamt (neu)",
+  "uid": "F2esMgSGy",
+  "version": 25
 }
